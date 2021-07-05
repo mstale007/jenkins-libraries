@@ -1,3 +1,5 @@
+import com.cicd.helper.JiraUpdater
+
 def call(def buildMode="mvn",def jira_issue=""){
     pipeline{
         agent any
