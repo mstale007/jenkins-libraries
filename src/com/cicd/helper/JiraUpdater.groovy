@@ -1,4 +1,5 @@
 package com.cicd.helper
+
 class JiraUpdater{
 
     JiraUpdater(){
