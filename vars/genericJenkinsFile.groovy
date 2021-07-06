@@ -1,5 +1,5 @@
 import com.cicd.helper.JiraUpdater
-import test
+
 def call(Map args =[buildMode: "mvn",jira_issue: ""]){
     def jira_updater= new JiraUpdater()
     pipeline{
@@ -14,6 +14,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         stages{
             stage("Initialize"){
                 steps{
+                    echo "Branch name is: $env.BRANCH_NAME"
                     echo "Changed: $args.jira_issue"
                     echo "Intializing..!"
                 }
