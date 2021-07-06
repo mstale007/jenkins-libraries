@@ -1,4 +1,4 @@
-import com.cicd.helper.JiraUpdater
+import com.cicd.helper.*
 
 def call(Map args =[buildMode: "mvn",jira_issue: ""]){
     def jira_updater= new JiraUpdater()
