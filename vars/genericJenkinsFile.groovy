@@ -5,6 +5,10 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
     pipeline{
         agent any
 
+        tools { 
+            maven "Maven"
+        }
+
         //options{}
 
         //parameters{}
@@ -15,7 +19,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             stage("Initialize"){
                 steps{
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo "Changed: $args.jira_issue"
+                    echo "Jira issue no: $args.jira_issue"
                     echo "Intializing..!"
                 }
                 post{
@@ -42,7 +46,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Build"){
                 steps{
-                    echo "Building..!"
+                    bat "mvn clean install -DskipTests"
                 }
                 post{
                     success{
@@ -55,7 +59,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Unit Tests"){
                 steps{
-                    echo "Unit Testing..!"
+                    bat "mvn -Dtest=UnitTests test"
                 }
                 post{
                     success{
@@ -63,6 +67,31 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     }
                     failure{
                         echo "JIRA: Unit Tests Failed"
+                    }
+                }
+            }
+            stage('Run on localhost') {
+                steps {
+
+                }
+            }
+            stage("BDD Test"){
+                steps{
+                    echo "Performance test"
+                    bat "mvn -Dtest=TestRunner test"
+                }
+                post{
+                    always {
+                        cucumber buildStatus: 'UNSTABLE',
+                            reportTitle: 'My report',
+                            fileIncludePattern: '**/*.json',
+                            trendsLimit: 10,
+                            classifications: [
+                                [
+                                    'key': 'Browser',
+                                    'value': 'Firefox'
+                                ]
+                            ]
                     }
                 }
             }
@@ -159,9 +188,22 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Performance Test"){
                 steps{
-                    echo "Performance Testing..!"
+                    echo "Performance test"
+                    bat "mvn -Dtest=TestRunner test"
                 }
                 post{
+                    always {
+                        cucumber buildStatus: 'UNSTABLE',
+                            reportTitle: 'My report',
+                            fileIncludePattern: '**/*.json',
+                            trendsLimit: 10,
+                            classifications: [
+                                [
+                                    'key': 'Browser',
+                                    'value': 'Firefox'
+                                ]
+                            ]
+                    }
                     success{
                         echo "JIRA: Performance Testing Successful"
                     }
