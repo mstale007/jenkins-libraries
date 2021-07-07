@@ -62,6 +62,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     bat "mvn -Dtest=UnitTests test"
                 }
                 post{
+                    always {
+                        junit '**/reports/junit/*.xml'
+                    }
                     success{
                         echo "JIRA: Unit Tests Successful"
                     }
