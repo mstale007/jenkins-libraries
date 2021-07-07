@@ -63,7 +63,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                 }
                 post{
                     always {
-                        junit '**/reports/junit/*.xml'
+                        junit '**/target/surefire-reports/*.xml'
                     }
                     success{
                         echo "JIRA: Unit Tests Successful"
