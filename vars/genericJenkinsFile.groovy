@@ -223,12 +223,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         }
         post{
             always{
-                 dir("../builds/${env.BUILD_NUMBER}/") {
-                //     bat "copy -r *.html $WORKSPACE"
-                bat "echo $WORKSPACE"
-                 }
-                bat "echo %CD%"
-                bat "echo $WORKSPACE"
+                bat "copy -r job/springboot-multibranch-pipeline/job/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/cucumber-html-reports $WORKSPACE"
+
                 echo "JIRA: Added BDD test reports"
             }
             //cleanup{}
