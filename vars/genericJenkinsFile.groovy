@@ -72,7 +72,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage('Run on localhost') {
                 steps {
-
+                    bat "START /B java -jar target/spring-boot-rest-api-tutorial-0.0.1-SNAPSHOT.jar"
                 }
             }
             stage("BDD Test"){
@@ -189,21 +189,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             stage("Performance Test"){
                 steps{
                     echo "Performance test"
-                    bat "mvn -Dtest=TestRunner test"
                 }
                 post{
-                    always {
-                        cucumber buildStatus: 'UNSTABLE',
-                            reportTitle: 'My report',
-                            fileIncludePattern: '**/*.json',
-                            trendsLimit: 10,
-                            classifications: [
-                                [
-                                    'key': 'Browser',
-                                    'value': 'Firefox'
-                                ]
-                            ]
-                    }
                     success{
                         echo "JIRA: Performance Testing Successful"
                     }
