@@ -225,9 +225,10 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             always{
                  dir("../builds/${env.BUILD_NUMBER}/") {
                 //     bat "copy -r *.html $WORKSPACE"
-                bat "echo %CD%"
+                bat "echo $WORKSPACE"
                  }
                 bat "echo %CD%"
+                bat "echo $WORKSPACE"
                 echo "JIRA: Added BDD test reports"
             }
             //cleanup{}
