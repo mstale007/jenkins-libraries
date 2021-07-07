@@ -1,7 +1,7 @@
 package com.cicd.helper
-class JiraUpdater{
+class JiraUtil{
 
-    JiraUpdater(){
+    JiraUtil(){
     }
     def update(Map args =[issueID: "CICD-13", progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
         String issue_ID=args.issue_ID.toString()

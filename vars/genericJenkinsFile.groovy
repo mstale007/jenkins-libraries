@@ -1,7 +1,7 @@
-import com.cicd.helper.*
+import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn",jira_issue: ""]){
-    def jira_updater= new JiraUpdater()
+    def jiraUtil= new JiraUtil()
     pipeline{
         agent any
 
@@ -180,7 +180,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                          script{
                             //tools.update()
 
-                            bat jira_updater.update(issue_ID: args.jira_issue, progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com")
+                            bat jiraUtil.update(issue_ID: args.jira_issue, progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com")
+                            bat jiraUtil.updateComment(issue_ID: args.jira_issue, text: "Build Failed")
                         }
                     }
                     failure{
