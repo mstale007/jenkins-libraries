@@ -224,7 +224,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         post{
             always{
                 dir("../builds/${env.BUILD_NUMBER}/") {
-                    bat "copy -r cucumber-html-reports $WORKSPACE"
+                    bat "copy -r *.html $WORKSPACE"
                 }
                 echo "JIRA: Added BDD test reports"
             }
