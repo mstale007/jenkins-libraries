@@ -223,8 +223,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         }
         post{
             always{
-                bat "copy -r job/springboot-multibranch-pipeline/job/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/cucumber-html-reports $WORKSPACE"
-
+               // bat "copy -r job/springboot-multibranch-pipeline/job/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/cucumber-html-reports $WORKSPACE"
+               // bat "curl.exe --output report.html --url https://localhost:8080/job/springboot-multibranch-pipeline/job/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/cucumber-html-reports"
+                echo ${env.BUILD_ID}
                 echo "JIRA: Added BDD test reports"
             }
             //cleanup{}
