@@ -87,7 +87,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     always {
                         cucumber buildStatus: 'UNSTABLE',
                             reportTitle: 'My report',
-                            fileIncludePattern: '**/*.html',
+                            fileIncludePattern: '**/*.json',
                             trendsLimit: 10,
                             classifications: [
                                 [
