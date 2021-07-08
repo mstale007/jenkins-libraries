@@ -27,6 +27,6 @@ class JiraUpdater{
     //  -F \"file=@C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/jenkins-pipeline-cucumber-example/branches/feature-test-pipeline-cucumber/builds/2/cucumber-html-reports/report-feature_3809222109.html\" \\
     //  \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" + issueID +\"/attachments\""
         String issue_ID = args.issueID.toString()
-        return "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE=\" --form \"file=@C:/creport33.html\""
+        return "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE=\" --header \"X-Atlassian-Token:no-check\" --form \"file=@C:/creport33.html\""
     }
 }
