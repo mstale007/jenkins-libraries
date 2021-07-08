@@ -29,6 +29,20 @@ def updateComment(Map args =[text: "www.google.com"]){
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
+def addLink(Map args =[text: http://localhost:8081/job/jenkins-pipeline-cucumber-example/job/feature-test-pipeline-cucumber/2/cucumber-html-reports/overview-features.html]){
+    String issue_ID=getIssueID().toString()
+    if(!issueID.equals("")){
+        echo "IssueId found: $issueID"
+    }
+    else{
+        echo "No issueID found!"
+        return
+    }
+
+    String body ='{\\"object\\":{\\"url\\":\\"'+args.text+'\\",\\"title\\":\\"bdd report\\"}}'
+    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/remotelink\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+}
+
 def getIssueID(){
     String issueKey="CICD"
     String branchName=env.BRANCH_NAME;
