@@ -42,6 +42,20 @@ def addLink(Map args =[text: http://localhost:8081/job/jenkins-pipeline-cucumber
     String body ='{\\"object\\":{\\"url\\":\\"'+args.text+'\\",\\"title\\":\\"bdd report\\"}}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/remotelink\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
 }
+                       
+def addAssignee(Map args =[text: 60dbed7c285656006a7a6927]){
+    String issue_ID=getIssueID().toString()
+    if(!issueID.equals("")){
+        echo "IssueId found: $issueID"
+    }
+    else{
+        echo "No issueID found!"
+        return
+    }
+
+    String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
+    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+}
 
 def getIssueID(){
     String issueKey="CICD"
