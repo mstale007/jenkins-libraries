@@ -2,14 +2,6 @@ import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn",jira_issue: ""]){
     def jiraUtil= new JiraUtil()
-    String issueKey="CICD"
-    String branchName = env.BRANCH_NAME
-    String prTitle = env.CHANGE_TITLE
-    String commitMessage=""
-    String jiraIssue=""
-    Boolean isIssueMentioned=true
-    int issueKeyStart=0
-    int issueKeyEnd=0
 
     pipeline{
         agent any
@@ -23,58 +15,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         stages{
             stage("Initialize"){
                 steps{
-                    script{
-                        //Get commitMessage
-                        commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
-
-                        
-                        issueKeyStart=branchName.indexOf(issueKey)
-                        issueKeyEnd=issueKeyStart
-                        //Search for issueKey in branchName, if available find exact issueID, else search in commitMesssage 
-                        if(issueKeyStart!=-1){
-                            issueKeyEnd=branchName.indexOf('-',issueKeyStart)+1
-                            while(issueKeyEnd<branchName.length() && branchName[issueKeyEnd].matches("[0-9]")){
-                                issueKeyEnd++ 
-                            }
-                            jiraIssue=branchName.substring(issueKeyStart,issueKeyEnd)
-                        }
-                        else if(commitMessage.indexOf(issueKey)!=-1){
-                                issueKeyStart=commitMessage.indexOf(issueKey)
-                                issueKeyEnd=issueKeyStart
-                                if(issueKeyStart!=-1){
-                                    issueKeyEnd=commitMessage.indexOf('-',issueKeyStart)+1
-                                    while(issueKeyEnd<commitMessage.length() && commitMessage[issueKeyEnd].matches("[0-9]")){
-                                        issueKeyEnd++ 
-                                    }
-                                    jiraIssue=commitMessage.substring(issueKeyStart,issueKeyEnd)
-                                }
-                        }
-                        //Search for issueKey in prTitle, if available find exact issueID, else no issueID mentioned 
-                        else{
-                            if(prTitle!=null){
-                                issueKeyStart=prTitle.indexOf(issueKey)
-                                issueKeyEnd=issueKeyStart
-                                if(issueKeyStart!=-1){
-                                    issueKeyEnd=prTitle.indexOf('-',issueKeyStart)+1
-                                    while(issueKeyEnd<prTitle.length() && prTitle[issueKeyEnd].matches("[0-9]")){
-                                        issueKeyEnd++ 
-                                    }
-                                    jiraIssue=prTitle.substring(issueKeyStart,issueKeyEnd)
-                                }
-                                else{
-                                    //No issue mentioned
-                                    isIssueMentioned=false
-                                    
-                                }
-                            }
-                        }
-                    }
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo "Commit Message: $commitMessage"
-                    echo "PR Tile: $prTitle"
-                    echo "IssueID: $jiraIssue"
                     echo "Intializing..!"
-                    bat "set"
                 }
                 post{
                     success{
@@ -245,8 +187,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         post{
             always{
                 script{
-                    bat jiraUtil.update(issue_ID: args.jira_issue, progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com")
-                    bat jiraUtil.updateComment(issue_ID: args.jira_issue, text: "Build Failed")
+                    jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
+                    jiraUtil.updateComment(text: "Build Failed")
                 }
                 echo "JIRA: Added BDD test reports"
             }
