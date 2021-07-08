@@ -15,7 +15,7 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
-def updateComment(Map args =[text: "Build Failure"]){
+def updateComment(Map args =[text: "www.google.com"]){
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
@@ -25,7 +25,7 @@ def updateComment(Map args =[text: "Build Failure"]){
         return
     }
 
-    String body = '{\\"body\\": {\\"type\\": \\"doc\\",\\"version\\": 1,\\"content\\": [{\\"type\\": \\"paragraph\\",\\"content\\": [{\\"text\\": \\"'+args.text+'\\" ,\\"type\\": \\"text\\"}]}]}}'
+    String body = '{\\"body\\": \\"If you can see me... We did it! Text: '+args.text+'\\"}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
