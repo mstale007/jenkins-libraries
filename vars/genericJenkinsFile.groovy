@@ -227,7 +227,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                // bat "copy -r job/springboot-multibranch-pipeline/job/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/cucumber-html-reports $WORKSPACE"
                // bat "curl.exe --output report.html --url https://localhost:8080/job/springboot-multibranch-pipeline/job/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/cucumber-html-reports*"
                // bat "curl.exe --url ${env.BUILD_URL}cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/overview-features.html"
-                bat jira_updater(issueID: args.jira_issue, attachmentLink: "www.abc.com")
+                bat jira_updater.sendAttachment(issueID: args.jira_issue, attachmentLink: "www.abc.com")
                 echo "JIRA: Added BDD test reports"
             }
             //cleanup{}
