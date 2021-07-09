@@ -227,7 +227,7 @@ def call(Map args =[buildMode: "mvn"]){
                     jiraUtil.updateComment(text: "Build Failed")
                     jiraUtil.sendAttachment(attachmentLink: "@C:/creport33.html")
                     jiraUtil.addAssignee()
-                    //fine
+                    //fine fine
                 }
                 echo "JIRA: Added BDD test reports"
             }
