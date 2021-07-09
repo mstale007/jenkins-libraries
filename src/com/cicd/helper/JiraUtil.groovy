@@ -51,10 +51,8 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
         echo "No issueID found!"
         return
     }
-
-    // String body ='{\\"accountId\\": \\"60dbed7c285656006a7a6927\\"}'
-    // bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
-    String body ='{\\"accountId\\": \\"60dbed7c285656006a7a6927\\"}'
+    String acc = args.text.toString()
+    String body ='{\\"accountId\\": \\"' + acc + '\\"}'
     bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/" +issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
 }
 
