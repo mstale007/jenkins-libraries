@@ -39,7 +39,7 @@ def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
         return
     }
     String link = args.attachmentLink.toString()
-    bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE=\" --header \"X-Atlassian-Token:no-check\" --form \"file=" + link + "\"")
+    bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"X-Atlassian-Token:no-check\" --form \"file=" + link + "\"")
 }
 
 def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
@@ -53,7 +53,7 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
     }
 
     String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
-    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE=\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
 
