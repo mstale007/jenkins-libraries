@@ -227,7 +227,6 @@ def call(Map args =[buildMode: "mvn"]){
                     jiraUtil.updateComment(text: "Build Failed")
                     jiraUtil.sendAttachment(attachmentLink: "@$WORKSPACE/../../jobs/${env.JOB_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports*")
                     jiraUtil.addAssignee()
-                    //fine fine
                 }
                 echo "JIRA: Added BDD test reports"
             }
