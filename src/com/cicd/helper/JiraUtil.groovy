@@ -52,7 +52,7 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
         return
     }
 
-    String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
+    String body ='{\\"accountId\\": \\"60dbed7c285656006a7a6927\\"}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
