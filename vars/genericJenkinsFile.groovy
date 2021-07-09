@@ -64,12 +64,12 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                 post{
                     always {
                         junit '**/target/surefire-reports/*.xml'
-                        step([$class: 'JacocoPublisher', 
-                            execPattern: '**/target/site/jacoco/*.exec',
-                            classPattern: '**/target/classes',
-                            sourcePattern: 'src/main/java',
-                            exclusionPattern: 'src/test*'
-                        ])
+                        // step([$class: 'JacocoPublisher', 
+                        //     execPattern: '**/target/site/jacoco/*.exec',
+                        //     classPattern: '**/target/site/jacoco/classes',
+                        //     sourcePattern: 'src/main/java',
+                        //     exclusionPattern: 'src/test*'
+                        // ])
                     }
                     success{
                         echo "JIRA: Unit Tests Successful"
