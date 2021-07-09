@@ -59,11 +59,17 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Unit Tests"){
                 steps{
-                    bat "mvn -Dtest=UnitTests test"
+                    bat "mvn -Dtest=UnitTests test jacoco:report"
                 }
                 post{
                     always {
                         junit '**/target/surefire-reports/*.xml'
+                        jacoco( 
+                            execPattern: 'target/site/*.exec',
+                            classPattern: 'target/site/classes',
+                            sourcePattern: 'src/main/java',
+                            exclusionPattern: 'src/test*'
+                        )
                     }
                     success{
                         echo "JIRA: Unit Tests Successful"
