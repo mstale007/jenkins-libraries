@@ -225,7 +225,7 @@ def call(Map args =[buildMode: "mvn"]){
                 script{
                     jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
                     jiraUtil.updateComment(text: "Build Failed")
-                    jiraUtil.sendAttachment(attachmentLink: "@C:/creport33.html")
+                    jiraUtil.sendAttachment(attachmentLink: "@$WORKSPACE/../../jobs/${env.JOB_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports*")
                     jiraUtil.addAssignee()
                     //fine fine
                 }
