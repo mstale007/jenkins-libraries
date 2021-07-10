@@ -230,7 +230,7 @@ def call(Map args =[buildMode: "mvn"]){
                 }
                 echo "JIRA: Added BDD test reports"
             }
-            //cleanup{}
+            //cleanup{} ??
         }
     }
 }
