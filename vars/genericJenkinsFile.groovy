@@ -1,4 +1,5 @@
 import com.cicd.helper.JiraUtil
+import com.cicd.helper.XmlParser
 
 def call(Map args =[buildMode: "mvn"]){
     def jiraUtil= new JiraUtil()
@@ -63,6 +64,7 @@ def call(Map args =[buildMode: "mvn"]){
                     always {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
+                        XmlParser.parse(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
                     }
                     success{
                         echo "JIRA: Unit Tests Successful"
@@ -94,6 +96,8 @@ def call(Map args =[buildMode: "mvn"]){
                                     'value': 'Firefox'
                                 ]
                             ]
+                            jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
+
                     }
                 }
             }
@@ -220,7 +224,6 @@ def call(Map args =[buildMode: "mvn"]){
                 script{
                     jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
                     jiraUtil.updateComment(text: "Build Failed")
-                    jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
                     jiraUtil.addAssignee()
                 }
                 echo "JIRA: Added BDD test reports"
