@@ -71,7 +71,7 @@ def call(Map args =[buildMode: "mvn"]){
                         //     def articles = new XmlParser().parseText(xmlFile)                       
                         // }
                         
-                        echo articles
+                        //echo articles
 
                     }
                     success{
@@ -237,7 +237,8 @@ def call(Map args =[buildMode: "mvn"]){
 
                     def xmlFile = getClass().getResourceAsStream("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
                         echo xmlFile
-                        def articles = new XmlParser().parseText(xmlFile) 
+                        def articles = new XmlParser().parseText(xmlFile)
+                        echo articles 
                 }
                 echo "JIRA: Added BDD test reports"
             }
