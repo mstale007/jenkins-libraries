@@ -64,12 +64,12 @@ def call(Map args =[buildMode: "mvn"]){
                     always {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
-                        script {
-                        //     xmlParse.parseIt(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
-                            def xmlFile = getClass().getResourceAsStream("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
-                            echo xmlFile
-                            def articles = new XmlParser().parseText(xmlFile)                       
-                        }
+                        // script {
+                        // //     xmlParse.parseIt(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
+                        //     def xmlFile = getClass().getResourceAsStream("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
+                        //     echo xmlFile
+                        //     def articles = new XmlParser().parseText(xmlFile)                       
+                        // }
                         
                         echo articles
 
@@ -234,6 +234,10 @@ def call(Map args =[buildMode: "mvn"]){
                     jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
                     jiraUtil.updateComment(text: "Build Failed")
                     jiraUtil.addAssignee()
+
+                    def xmlFile = getClass().getResourceAsStream("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
+                        echo xmlFile
+                        def articles = new XmlParser().parseText(xmlFile) 
                 }
                 echo "JIRA: Added BDD test reports"
             }
