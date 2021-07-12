@@ -64,7 +64,7 @@ def call(Map args =[buildMode: "mvn"]){
                     always {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
-                        XmlParser.parse(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
+                        XmlParser.parse(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
                     }
                     success{
                         echo "JIRA: Unit Tests Successful"
