@@ -67,7 +67,7 @@ def call(Map args =[buildMode: "mvn"]){
                         script {
                         //     xmlParse.parseIt(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
                             def xmlFile = getClass().getResourceAsStream("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
-
+                            echo xmlFile
                             def articles = new XmlParser().parseText(xmlFile)                       
                         }
                         
