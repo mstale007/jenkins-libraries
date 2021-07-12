@@ -1,5 +1,7 @@
 package com.cicd.helper
 
+import groovy.util.XmlParser;
+
 def parseIt(Map args =[ xmlPath: "C:"]){
     String xml_path = args.xmlPath.toString()
 
