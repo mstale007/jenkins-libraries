@@ -34,8 +34,8 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     def xmlFile = readFile xmlPath
     def xml = new XmlParser().parseText(xmlFile) 
-
-    for(c in xml.result.suites.suite.cases) {
+    echo "Here"
+    for(c in xml.result.suites.suite[0].cases) {
         echo c.text()
     }
     // filename = 'cucumber-trends.json'
