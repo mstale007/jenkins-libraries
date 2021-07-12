@@ -33,10 +33,10 @@ def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
 
     def xmlFile = readFile xmlPath
-    def articles = new XmlParser().parseText(xmlFile) 
+    def xml = new XmlParser().parseText(xmlFile) 
 
-    for(article in articles) {
-        echo article
+    for(c in xml.result.suites.suite.cases) {
+        echo c.text()
     }
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
