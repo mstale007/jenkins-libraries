@@ -1,9 +1,8 @@
 import com.cicd.helper.JiraUtil
-import com.cicd.helper.ParseXml
 
 def call(Map args =[buildMode: "mvn"]){
     def jiraUtil= new JiraUtil()
-    def xmlParse = new ParseXml()
+    
     pipeline{
         agent any
 
