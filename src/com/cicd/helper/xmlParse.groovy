@@ -9,3 +9,7 @@ def parseXml(Map args =[ xmlPath: "C:"]){
 
     bat(script: "echo " + articles.'*'.size())
 }
+
+def sh(args){
+    return sh(args.script)
+}
