@@ -1,5 +1,5 @@
 import com.cicd.helper.JiraUtil
-import com.cicd.helper.xmlParse
+//import com.cicd.helper.XmlParser
 
 def call(Map args =[buildMode: "mvn"]){
     def jiraUtil= new JiraUtil()
@@ -64,7 +64,7 @@ def call(Map args =[buildMode: "mvn"]){
                     always {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
-                        //xmlParse.parseXml(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
+                        //XmlParser.parse()
                     }
                     success{
                         echo "JIRA: Unit Tests Successful"
