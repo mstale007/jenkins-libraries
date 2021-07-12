@@ -31,10 +31,13 @@ def updateComment(Map args =[text: "www.google.com"]){
 
 def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
-    
+
     def xmlFile = readFile xmlPath
-    def articles = new XmlParser().parseText(xmlFile)  
-    echo articles 
+    def articles = new XmlParser().parseText(xmlFile) 
+
+    for(article in articles) {
+        echo article
+    }
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
     // response=response.substring(response.indexOf("\n")+1).trim()
