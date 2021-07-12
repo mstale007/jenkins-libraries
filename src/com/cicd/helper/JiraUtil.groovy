@@ -1,4 +1,5 @@
 package com.cicd.helper
+import groovy.json.JsonSlurperClassic
 
 def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
     String issue_ID=getIssueID().toString()
@@ -14,8 +15,35 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
     bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
+def updateCommentwithBDD(){
+    filename = 'cucumber-trends.json'
+    response=bat(script:"type $filename",returnStdout: true).trim()
+    response=response.substring(response.indexOf("\n")+1).trim()
 
-def updateComment(Map args =[text: "www.google.com"]){
+    def cucumber_json=getJSON(response)
+    echo "$cucumber_json.buildNumbers"
+
+    String comment="\\n^|"
+    for(element in cucumber_json){
+        comment+="^|*"+element.key.toString().trim()+"*^|"
+    }
+    comment+="^|\\n"
+    for(element in cucumber_json){
+        comment+="^|"+element.value[-1].toString().trim()
+    }
+    comment+="^|"
+    updateComment("BDD Test Reports:\\n"+comment)
+}
+
+@NonCPS
+def getJSON(response){
+    def jsonSlurper = new JsonSlurperClassic()
+    def cfg = jsonSlurper.parseText(response)
+    jsonSlurper=null
+    return cfg
+}
+
+def updateComment(text){
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
@@ -25,9 +53,38 @@ def updateComment(Map args =[text: "www.google.com"]){
         return
     }
 
-    String body = '{\\"body\\": \\"If you can see me... We did it! Text: '+args.text+'\\"}'
+    String body = '{\\"body\\": \\"'+text+'\\"}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
+
+
+def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
+    String issue_ID = getIssueID().toString()
+    if(!issueID.equals("")){
+        echo "IssueId found: $issueID"
+    }
+    else{
+        echo "No issueID found!"
+        return
+    }
+    String link = args.attachmentLink.toString()
+    bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE=\" --header \"X-Atlassian-Token:no-check\" --form \"file=" + link + "\"")
+}
+
+def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
+    String issue_ID=getIssueID().toString()
+    if(!issueID.equals("")){
+        echo "IssueId found: $issueID"
+    }
+    else{
+        echo "No issueID found!"
+        return
+    }
+
+    String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
+    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+}
+
 
 def getIssueID(){
     String issueKey="CICD"

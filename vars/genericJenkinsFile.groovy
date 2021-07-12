@@ -1,6 +1,6 @@
 import com.cicd.helper.JiraUtil
 
-def call(Map args =[buildMode: "mvn",jira_issue: ""]){
+def call(Map args =[buildMode: "mvn"]){
     def jiraUtil= new JiraUtil()
 
     pipeline{
@@ -43,6 +43,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             stage("Build"){
                 steps{
                     echo "Building..!"
+                    bat "mvn clean install -DskipTests"
                 }
                 post{
                     success{
@@ -56,13 +57,48 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             stage("Unit Tests"){
                 steps{
                     echo "Unit Testing..!"
+                     bat "mvn -Dtest=UnitTests test jacoco:report"
                 }
                 post{
+                    always {
+                        junit '**/target/surefire-reports/*.xml'
+                        // step([$class: 'JacocoPublisher', 
+                        //     execPattern: '**/target/site/jacoco/*.exec',
+                        //     classPattern: '**/target/classes',
+                        //     sourcePattern: 'src/main/java',
+                        //     exclusionPattern: 'src/test*'
+                        // ])
+                    }
                     success{
                         echo "JIRA: Unit Tests Successful"
                     }
                     failure{
                         echo "JIRA: Unit Tests Failed"
+                    }
+                }
+            }
+            stage('Run on localhost') {
+                steps {
+                    bat "START /B java -jar target/spring-boot-rest-api-tutorial-0.0.1-SNAPSHOT.jar"
+                }
+            }
+            stage("BDD Test"){
+                steps{
+                    echo "Performance test"
+                    bat "mvn -Dtest=TestRunner test"
+                }
+                post{
+                    always {
+                        cucumber buildStatus: 'UNSTABLE',
+                            reportTitle: 'My report',
+                            fileIncludePattern: '**/*.json',
+                            trendsLimit: 10,
+                            classifications: [
+                                [
+                                    'key': 'Browser',
+                                    'value': 'Firefox'
+                                ]
+                            ]
                     }
                 }
             }
@@ -189,6 +225,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                 script{
                     jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
                     jiraUtil.updateComment(text: "Build Failed")
+                    //jiraUtil.sendAttachment(attachmentLink: "target/site")
+                    jiraUtil.addAssignee()
                 }
                 echo "JIRA: Added BDD test reports"
             }
