@@ -1,9 +1,9 @@
 import com.cicd.helper.JiraUtil
-import com.cicd.helper.XmlParse
+import com.cicd.helper.ParseXml
 
 def call(Map args =[buildMode: "mvn"]){
     def jiraUtil= new JiraUtil()
-    def xmlParse = new XmlParse()
+    def xmlParse = new ParseXml()
     pipeline{
         agent any
 
@@ -65,7 +65,7 @@ def call(Map args =[buildMode: "mvn"]){
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
                         script {
-                            xmlParse.parseXml(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
+                            xmlParse.parse(xmlPath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")
                         }
                         //XmlParser.parse()
                     }

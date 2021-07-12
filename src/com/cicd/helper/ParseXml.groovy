@@ -1,6 +1,6 @@
 package com.cicd.helper
 
-def parseXml(Map args =[ xmlPath: "C:"]){
+def parse(Map args =[ xmlPath: "C:"]){
     String xml_path = args.xmlPath.toString()
 
     def xmlFile = getClass().getResourceAsStream("@" + xml_path)
