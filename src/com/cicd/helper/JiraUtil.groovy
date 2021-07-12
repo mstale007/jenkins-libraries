@@ -29,6 +29,31 @@ def updateComment(Map args =[text: "www.google.com"]){
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
+def xmlToComment(Map args = [path: "C:/"]){
+    String xmlPath = args.path.toString()
+    
+    def xmlFile = readFile xmlPath
+    def articles = new XmlParser().parseText(xmlFile)  
+    echo articles 
+    // filename = 'cucumber-trends.json'
+    // response=bat(script:"type $filename",returnStdout: true).trim()
+    // response=response.substring(response.indexOf("\n")+1).trim()
+
+    // def cucumber_json=getJSON(response)
+    // echo "$cucumber_json.buildNumbers"
+
+    // String comment="\\n^|"
+    // for(element in cucumber_json){
+    //     comment+="^|*"+element.key.toString().trim()+"*^|"
+    // }
+    // comment+="^|\\n"
+    // for(element in cucumber_json){
+    //     comment+="^|"+element.value[-1].toString().trim()
+    // }
+    // comment+="^|"
+    // updateComment("BDD Test Reports:\\n"+comment)
+}
+
 def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
     String issue_ID = getIssueID().toString()
     if(!issueID.equals("")){
