@@ -55,7 +55,7 @@ def getAccountId(){
                     
     def jsonSlurper = new JsonSlurper()
     parse = jsonSlurper.parseText(responseNew)
-    accountId = parse.accountId[0])
+    accountId = parse.accountId[0]
     return accountId; 
 }
 
