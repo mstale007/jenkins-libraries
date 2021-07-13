@@ -25,7 +25,7 @@ def updateComment(Map args =[text: "www.google.com"]){
         return
     }
 
-    String body = '{\\"body\\": \\"If you can see me... We did it! Text: '+args.text+'\\"}'
+    String body = '{\\"body\\": \\"'+args.text+'\\"}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
@@ -41,25 +41,25 @@ def xmlToComment(Map args = [path: "C:/"]){
     String comment = "\\n^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.className[0].text().toString().trim()+"*^|"
+        comment += "^|*"+c.className[0].text().toString()+"*^|"
     } 
 
     comment = "\\n^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.testName[0].text().toString().trim()+"*^|"
+        comment += "^|*"+c.testName[0].text().toString()+"*^|"
     } 
 
     comment = "\\n^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.skipped[0].text().toString().trim()+"*^|"
+        comment += "^|*"+c.skipped[0].text().toString()+"*^|"
     } 
 
     comment = "\\n^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.failedSince[0].text().toString().trim()+"*^|"
+        comment += "^|*"+c.failedSince[0].text().toString()+"*^|"
     } 
  
     comment+="^|"
