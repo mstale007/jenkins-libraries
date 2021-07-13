@@ -2,7 +2,7 @@ import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn"]){
     def jiraUtil= new JiraUtil()
-    
+
     pipeline{
         agent any
 
@@ -64,7 +64,7 @@ def call(Map args =[buildMode: "mvn"]){
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
                         script {
-                            jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")                    
+                            jiraUtil.xmlToComment(path: "file://C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")                    
                         }
                     }
                     success{
