@@ -26,10 +26,10 @@ def updateCommentwithBDD(){
     filename = 'cucumber-trends.json'
 
     if(isUnix()){
-        response=sh(script:"type $filename",returnStdout: true).trim()
+        response=sh(script:"cat $filename",returnStdout: true).trim()
     }
     else{
-        response=bat(script:"cat $filename",returnStdout: true).trim()
+        response=bat(script:"type $filename",returnStdout: true).trim()
     }
     response=response.substring(response.indexOf("\n")+1).trim()
 
