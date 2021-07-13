@@ -62,7 +62,7 @@ def xmlToComment(Map args = [path: "C:/"]){
     } 
  
     comment+="^|"
-    updateComment("Junit Test Reports:\\n"+comment)
+    updateComment(text: "Junit Test Reports:\\n" + comment)
 }
 
 def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
