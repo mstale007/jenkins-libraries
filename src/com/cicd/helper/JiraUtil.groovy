@@ -41,8 +41,6 @@ def xmlToComment(Map args = [path: "C:/"]){
     String comment = "\\n^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        echo c.className[0].text().toString()
-         echo c.className[0].text()
         comment += "^|*"+c.className[0].text().toString()+"*^|"
     } 
 
@@ -65,6 +63,8 @@ def xmlToComment(Map args = [path: "C:/"]){
     } 
  
     comment+="^|"
+
+    echo comment
     updateComment(text: "Junit Test Reports:\\n" + comment)
 }
 
