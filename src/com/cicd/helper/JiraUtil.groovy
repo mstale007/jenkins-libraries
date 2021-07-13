@@ -46,7 +46,7 @@ def xmlToComment(Map args = [path: "C:/"]){
 			
     //      println("*******************************")
     //   }
-    echo xml.result.suites.suite.name.text()
+    echo xml.suites.suite.name.text()
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
     // response=response.substring(response.indexOf("\n")+1).trim()
