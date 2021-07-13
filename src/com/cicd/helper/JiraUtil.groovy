@@ -1,4 +1,5 @@
 package com.cicd.helper
+import groovy.json.JsonSlurper
 
 def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
     String issue_ID=getIssueID().toString()
@@ -42,6 +43,20 @@ def addAssignee(Map args =[text: 60dbed7c285656006a7a6927]){
 
     String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+}
+
+@NonCPS
+def getAccountId(){
+    String accountId = ""
+    //String commitEmail = bat(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'').trim()
+    String commitEmail = "shantanud390@gmail.com"
+    String response = bat(returnStdout: true,script:"curl --request GET \"https://shantanu391.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE= \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+    responseNew = response.substring(response.indexOf("[{")).trim()
+                    
+    def jsonSlurper = new JsonSlurper()
+    parse = jsonSlurper.parseText(responseNew)
+    accountId = parse.accountId[0])
+    return accountId; 
 }
 
 def getIssueID(){
