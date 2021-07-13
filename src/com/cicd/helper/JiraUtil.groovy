@@ -29,6 +29,7 @@ def updateComment(Map args =[text: "www.google.com"]){
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
+@NonCPS
 def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
 
