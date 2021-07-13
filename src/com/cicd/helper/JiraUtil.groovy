@@ -49,21 +49,21 @@ def xmlToComment(Map args = [path: "C:/"]){
     comment += "^|*Test Name*^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.testName[0].text().toString()+"*^|"
+        comment += "^|"+c.testName[0].text().toString()+"^|"
     } 
 
     comment += "\\n^|"
     comment += "^|*Skipped*^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.skipped[0].text().toString()+"*^|"
+        comment += "^|"+c.skipped[0].text().toString()+"^|"
     } 
 
     comment += "\\n^|"
     comment += "^|*Failed Since*^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.failedSince[0].text().toString()+"*^|"
+        comment += "^|"+c.failedSince[0].text().toString()+"^|"
     } 
  
     comment += "^|"
