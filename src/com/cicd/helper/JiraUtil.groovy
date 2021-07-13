@@ -59,6 +59,20 @@ def getAccountId(){
     return accountId; 
 }
 
+@NonCPS
+def createIssue(){
+    String issueKey = ""
+    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"TEST\\"},\\"summary\\": \\"New Issue Created.\\",\\"description\\": \\"Creating of an issue using project keys and issue type names using the REST API\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
+    String response  = bat(returnStdout: true,script: "curl -g --request POST \"https://shantanu391.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE= \" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
+    String responseNew =response.substring(response.indexOf("}}}")+4).trim()
+    //println(responseNew)
+        
+    def jsonSlurper = new JsonSlurper()
+    parser = jsonSlurper.parseText(responseNew)
+    issueKey = parser.key
+    return issueKey;
+} 
+
 def getIssueID(){
     String issueKey="CICD"
     String branchName=env.BRANCH_NAME;
