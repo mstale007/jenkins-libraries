@@ -39,36 +39,19 @@ def xmlToComment(Map args = [path: "C:/"]){
     //echo xml.result.suites.suite[0].name.text()
 
     String comment = "\\n^|"
-    comment += "^|*Class Name*^|"
+    comment += "^|*Class Name*^|" + "^|*Test Name*^|" + "^|*Skipped*^|" + "^|*Failed Since*^|"
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "^|*"+c.className[0].text().toString()+"*^|"
-    } 
+        comment += "\\n^|" +
+                    "^|"+c.className[0].text().toString()+"^|" +
+                    "^|"+c.testName[0].text().toString()+"^|" +
+                    "^|"+c.skipped[0].text().toString()+"^|" +
+                    "^|"+c.failedSince[0].text().toString()+"^|"
 
-    comment += "\\n^|"
-    comment += "^|*Test Name*^|"
-    xml.suites.suite.cases.case.each{
-        c-> 
-        comment += "^|"+c.testName[0].text().toString()+"^|"
-    } 
 
-    comment += "\\n^|"
-    comment += "^|*Skipped*^|"
-    xml.suites.suite.cases.case.each{
-        c-> 
-        comment += "^|"+c.skipped[0].text().toString()+"^|"
     } 
-
-    comment += "\\n^|"
-    comment += "^|*Failed Since*^|"
-    xml.suites.suite.cases.case.each{
-        c-> 
-        comment += "^|"+c.failedSince[0].text().toString()+"^|"
-    } 
- 
     comment += "^|"
 
-    echo comment
     updateComment(text: "Junit Test Reports:\\n" + comment)
 }
 
