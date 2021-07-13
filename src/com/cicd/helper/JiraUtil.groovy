@@ -13,8 +13,15 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     }
 
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
-    bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+    if(isUnix()){
+        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+    }
+    else{
+        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+    }
 }
+
+
 def updateCommentwithBDD(){
     filename = 'cucumber-trends.json'
     response=bat(script:"type $filename",returnStdout: true).trim()
@@ -54,37 +61,14 @@ def updateComment(text){
     }
 
     String body = '{\\"body\\": \\"'+text+'\\"}'
-    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
-}
 
-
-def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
-    String issue_ID = getIssueID().toString()
-    if(!issueID.equals("")){
-        echo "IssueId found: $issueID"
+    if(isUnix()){
+        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
     else{
-        echo "No issueID found!"
-        return
+        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
-    String link = args.attachmentLink.toString()
-    bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE=\" --header \"X-Atlassian-Token:no-check\" --form \"file=" + link + "\"")
 }
-
-def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
-    String issue_ID=getIssueID().toString()
-    if(!issueID.equals("")){
-        echo "IssueId found: $issueID"
-    }
-    else{
-        echo "No issueID found!"
-        return
-    }
-
-    String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
-    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
-}
-
 
 def getIssueID(){
     String issueKey="CICD"
@@ -96,8 +80,12 @@ def getIssueID(){
     int issueKeyStart=0
     int issueKeyEnd=0
 
-    commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
-
+    if(isUnix()){
+        commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
+    }
+    else{
+        commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
+    }
     issueKeyStart=branchName.indexOf(issueKey)
     issueKeyEnd=issueKeyStart
     //Search for issueKey in branchName, if available find exact issueID, else search in commitMesssage 
@@ -140,8 +128,4 @@ def getIssueID(){
         }
     }
     return jiraIssue;
-}
-
-def sh(args){
-    return sh(args.script)
 }
