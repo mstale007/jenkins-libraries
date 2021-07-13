@@ -37,32 +37,32 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     //echo xml.result.suites.suite[0].name.text()
 
+    String comment = "\\n^|"
     xml.suites.suite.cases.case.each{
-        c->
-        
-        print("Class Name:")
-        println "${c.className[0].text()}"
-        
-        println("*******************************")
-    }
-    echo xml.suites.suite.name.text()
-    // filename = 'cucumber-trends.json'
-    // response=bat(script:"type $filename",returnStdout: true).trim()
-    // response=response.substring(response.indexOf("\n")+1).trim()
+        c-> 
+        comment += "^|*"+c.className[0].text().toString().trim()+"*^|"
+    } 
 
-    // def cucumber_json=getJSON(response)
-    // echo "$cucumber_json.buildNumbers"
+    comment = "\\n^|"
+    xml.suites.suite.cases.case.each{
+        c-> 
+        comment += "^|*"+c.testName[0].text().toString().trim()+"*^|"
+    } 
 
-    // String comment="\\n^|"
-    // for(element in cucumber_json){
-    //     comment+="^|*"+element.key.toString().trim()+"*^|"
-    // }
-    // comment+="^|\\n"
-    // for(element in cucumber_json){
-    //     comment+="^|"+element.value[-1].toString().trim()
-    // }
-    // comment+="^|"
-    // updateComment("BDD Test Reports:\\n"+comment)
+    comment = "\\n^|"
+    xml.suites.suite.cases.case.each{
+        c-> 
+        comment += "^|*"+c.skipped[0].text().toString().trim()+"*^|"
+    } 
+
+    comment = "\\n^|"
+    xml.suites.suite.cases.case.each{
+        c-> 
+        comment += "^|*"+c.failedSince[0].text().toString().trim()+"*^|"
+    } 
+ 
+    comment+="^|"
+    updateComment("Junit Test Reports:\\n"+comment)
 }
 
 def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
