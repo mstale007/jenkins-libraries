@@ -35,10 +35,17 @@ def xmlToComment(Map args = [path: "C:/"]){
     def xmlFile = readFile xmlPath
     def xml = new XmlParser().parseText(xmlFile) 
     echo "Here"
-   // for(c in xml.result.suites.suite.cases) {
-       // echo xml.result.suites[0].cases[0]
-   // }
+
     echo xml.result.suites.suite[0].name.text()
+
+    xml.result.suites.suite.cases.case.each{
+         c->
+			
+         print("Class Name:")
+         println "${c.className[0].text()}"
+			
+         println("*******************************")
+      }
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
     // response=response.substring(response.indexOf("\n")+1).trim()
