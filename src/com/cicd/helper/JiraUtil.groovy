@@ -33,7 +33,7 @@ def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
 
     //def xmlFile = readFile xmlPath
-    def xml = new XmlSlurper().parse(xmPath) 
+    def xml = new XmlSlurper().parse(xmlPath) 
     echo "Here"
 
     //echo xml.result.suites.suite[0].name.text()
