@@ -33,7 +33,7 @@ def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
 
     def xmlFile = readFile xmlPath
-    def xml = new XmlParser().parseText(xmlFile) 
+    def xml = new XmlParser().parse(xmlFile) 
     echo "Here"
 
     //echo xml.result.suites.suite[0].name.text()
@@ -46,7 +46,7 @@ def xmlToComment(Map args = [path: "C:/"]){
 			
     //      println("*******************************")
     //   }
-    assert xml.result.suites.suite.name.text() == 'com.staxrt.tutorial.UnitTest'
+    echo xml.result.suites.suite.name.text()
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
     // response=response.substring(response.indexOf("\n")+1).trim()
