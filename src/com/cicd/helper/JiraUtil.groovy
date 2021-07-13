@@ -34,18 +34,17 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     //def xmlFile = readFile xmlPath
     def xml = new XmlSlurper().parse(xmlPath) 
-    echo "Here"
 
     //echo xml.result.suites.suite[0].name.text()
 
-    // xml.result.suites.suite.cases.case.each{
-    //      c->
-			
-    //      print("Class Name:")
-    //      println "${c.className[0].text()}"
-			
-    //      println("*******************************")
-    //   }
+    xml.result.suites.suite.cases.case.each{
+        c->
+        
+        print("Class Name:")
+        println "${c.className[0].text()}"
+        
+        println("*******************************")
+    }
     echo xml.suites.suite.name.text()
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
