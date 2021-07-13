@@ -27,6 +27,7 @@ def updateCommentwithBDD(){
 
     if(isUnix()){
         response=sh(script:"cat $filename",returnStdout: true).trim()
+        echo "$response"
     }
     else{
         response=bat(script:"type $filename",returnStdout: true).trim()
