@@ -36,7 +36,7 @@ def xmlToComment(Map args = [path: "C:/"]){
     def xml = new XmlParser().parseText(xmlFile) 
     echo "Here"
 
-    echo xml.result.suites.suite[0].name.text()
+    //echo xml.result.suites.suite[0].name.text()
 
     xml.result.suites.suite.cases.case.each{
          c->
