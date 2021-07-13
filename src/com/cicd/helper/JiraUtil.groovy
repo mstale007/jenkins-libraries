@@ -24,7 +24,13 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
 
 def updateCommentwithBDD(){
     filename = 'cucumber-trends.json'
-    response=bat(script:"type $filename",returnStdout: true).trim()
+
+    if(isUnix()){
+        response=bat(script:"type $filename",returnStdout: true).trim()
+    }
+    else{
+        response=sh(script:"cat $filename",returnStdout: true).trim()
+    }
     response=response.substring(response.indexOf("\n")+1).trim()
 
     def cucumber_json=getJSON(response)
