@@ -37,7 +37,7 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     //echo xml.result.suites.suite[0].name.text()
 
-    xml.result.suites.suite.cases.case.each{
+    xml.suites.suite.cases.case.each{
         c->
         
         print("Class Name:")
