@@ -38,14 +38,15 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     //echo xml.result.suites.suite[0].name.text()
 
-    xml.result.suites.suite.cases.case.each{
-         c->
+    // xml.result.suites.suite.cases.case.each{
+    //      c->
 			
-         print("Class Name:")
-         println "${c.className[0].text()}"
+    //      print("Class Name:")
+    //      println "${c.className[0].text()}"
 			
-         println("*******************************")
-      }
+    //      println("*******************************")
+    //   }
+    echo xml.result.suites.suite.name.text()
     // filename = 'cucumber-trends.json'
     // response=bat(script:"type $filename",returnStdout: true).trim()
     // response=response.substring(response.indexOf("\n")+1).trim()
