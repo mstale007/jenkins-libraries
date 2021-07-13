@@ -32,8 +32,8 @@ def updateComment(Map args =[text: "www.google.com"]){
 def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
 
-    def xmlFile = readFile xmlPath
-    def xml = new XmlSlurper().parse(xmlFile) 
+    //def xmlFile = readFile xmlPath
+    def xml = new XmlSlurper().parse(xmPath) 
     echo "Here"
 
     //echo xml.result.suites.suite[0].name.text()
