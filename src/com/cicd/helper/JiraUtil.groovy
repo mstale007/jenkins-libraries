@@ -30,7 +30,7 @@ def updateComment(Map args =[text: "www.google.com"]){
 }
 
 def xmlToComment(Map args = [path: "C:/"]){
-    String xmlPath = args.path.toURI()
+    String xmlPath = args.path.toString()
 
     def xmlFile = readFile xmlPath
     def xml = new XmlParser().parse(xmlFile) 
