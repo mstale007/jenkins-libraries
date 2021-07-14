@@ -51,7 +51,7 @@ def getAccountId(){
     //String commitEmail = bat(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'').trim()
     String commitEmail = "shantanud390@gmail.com"
     String response = bat(returnStdout: true,script:"curl --request GET \"https://shantanu391.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE= \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
-    responseNew = response.substring(response.indexOf("[{")).trim()
+    String responseNew = response.substring(response.indexOf("\n")+1).trim()
                     
     def jsonSlurper = new JsonSlurper()
     parse = jsonSlurper.parseText(responseNew)
@@ -64,7 +64,7 @@ def createIssue(){
     String issueKey = ""
     String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"TEST\\"},\\"summary\\": \\"New Issue Created.\\",\\"description\\": \\"Creating of an issue using project keys and issue type names using the REST API\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
     String response  = bat(returnStdout: true,script: "curl -g --request POST \"https://shantanu391.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE= \" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
-    String responseNew =response.substring(response.indexOf("}}}")+4).trim()
+    String responseNew = response.substring(response.indexOf("\n")+1).trim()
     //println(responseNew)
         
     def jsonSlurper = new JsonSlurper()
