@@ -23,6 +23,7 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     }
 }
 
+@NonCPS
 def updateComment(Map args =[text: "www.google.com"]){
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
