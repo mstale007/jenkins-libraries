@@ -1,5 +1,5 @@
 package com.cicd.helper
-import groovy.json.JsonSlurper
+import groovy.json.JsonSlurperClassic
 
 def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
     String issue_ID=getIssueID().toString()
@@ -31,7 +31,7 @@ def updateComment(Map args =[text: "www.google.com"]){
 }
 
                        
-def addAssignee(Map args =[text: 60dbed7c285656006a7a6927]){
+def addAssignee(){
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
@@ -40,37 +40,53 @@ def addAssignee(Map args =[text: 60dbed7c285656006a7a6927]){
         echo "No issueID found!"
         return
     }
+    String accountId = getAccountId().toString()
 
-    String body ='{\\"accountId\\": \\"'+args.text+'\\"}'
-    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+    String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
+    if(isUnix()){
+        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" -d \""+body+"")
+    }
+    else{
+        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+    }   
 }
 
 @NonCPS
 def getAccountId(){
     String accountId = ""
-    //String commitEmail = bat(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'').trim()
-    String commitEmail = "shantanud390@gmail.com"
-    String response = bat(returnStdout: true,script:"curl --request GET \"https://shantanu391.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE= \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
-    String responseNew = response.substring(response.indexOf("\n")+1).trim()
-                    
-    def jsonSlurper = new JsonSlurper()
-    parse = jsonSlurper.parseText(responseNew)
+    //String commitEmail = "shantanud390@gmail.com"
+    if(isUnix()){
+        String commitEmail = sh(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'')
+        String response = sh(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==  \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
+    }
+    else{
+        String commitEmail = bat(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'')
+        String response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        response = response.substring(response.indexOf("\n")+1).trim()
+    }                  
+    def jsonSlurper = new JsonSlurperClassic()
+    parse = jsonSlurper.parseText(response)
     accountId = parse.accountId[0]
     return accountId; 
 }
 
 @NonCPS
 def createIssue(){
+    def jsonSlurper = new JsonSlurperClassic()
     String issueKey = ""
-    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"TEST\\"},\\"summary\\": \\"New Issue Created.\\",\\"description\\": \\"Creating of an issue using project keys and issue type names using the REST API\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
-    String response  = bat(returnStdout: true,script: "curl -g --request POST \"https://shantanu391.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic c2hhbnRhbnVkMzkwQGdtYWlsLmNvbTo2YUpLV1VLTzN0bkR6SUZKNE5BRDdBNDE= \" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
-    String responseNew = response.substring(response.indexOf("\n")+1).trim()
-    //println(responseNew)
-        
-    def jsonSlurper = new JsonSlurper()
-    parser = jsonSlurper.parseText(responseNew)
+    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"CICD\\"},\\"summary\\": \\"New Issue Created.\\",\\"description\\": \\"Creating of an issue using project keys and issue type names using the REST API\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
+    if(isUnix()){
+        String response  = sh(returnStdout: true,script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" -d \""+body+"\"")   
+    }
+    else{
+        String response  = bat(returnStdout: true,script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
+        response = response.substring(response.indexOf("\n")+1).trim()
+    }
+    parser = jsonSlurper.parseText(response)
     issueKey = parser.key
     return issueKey;
+    }
+    
 } 
 
 def getIssueID(){
