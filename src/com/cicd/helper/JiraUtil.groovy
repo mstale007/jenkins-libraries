@@ -98,7 +98,7 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     String comment = "\\n" + table_seperator
     comment += table_seperator + "*Class Name*" + table_seperator 
-            + table_seperator "*Test Name*" + table_seperator 
+            + table_seperator + "*Test Name*" + table_seperator 
             + table_seperator + "*Skipped*" + table_seperator 
             + table_seperator + "*Failed Since*" + table_seperator
 
