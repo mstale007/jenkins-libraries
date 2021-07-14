@@ -37,15 +37,23 @@ def updateCommentwithBDD(){
     def cucumber_json=getJSON(response)
     echo "$cucumber_json.buildNumbers"
 
-    String comment="\\n^|"
-    for(element in cucumber_json){
-        comment+="^|*"+element.key.toString().trim()+"*^|"
+    String table_seperator=""
+    if(isUnix()){
+        table_seperator="`|"
     }
-    comment+="^|\\n"
-    for(element in cucumber_json){
-        comment+="^|"+element.value[-1].toString().trim()
+    else{
+        table_seperator="^|"
     }
-    comment+="^|"
+
+    String comment=table_seperator
+    for(element in cucumber_json){
+        comment+=table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
+    }
+    comment+=table_seperator+"\\n"
+    for(element in cucumber_json){
+        comment+=table_seperator+element.value[-1].toString().trim()
+    }
+    comment+=table_seperator
     updateComment("BDD Test Reports:\\n"+comment)
 }
 
