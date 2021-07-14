@@ -105,16 +105,16 @@ def xmlToComment(Map args = [path: "C:/"]){
             ${table_seperator} *Skipped* ${table_seperator} 
             ${table_seperator} *Failed Since* ${table_seperator}"""
 
-    // xml.suites.suite.cases.case.each{
-    //     c-> 
-    //     comment += "\\n" + table_seperator +
-    //                 table_seperator + c.className[0].text().toString() + table_seperator +
-    //                 table_seperator + c.testName[0].text().toString() + table_seperator +
-    //                 table_seperator + c.skipped[0].text().toString() + table_seperator +
-    //                 table_seperator + c.failedSince[0].text().toString() + table_seperator
+    xml.suites.suite.cases.case.each{
+        c-> 
+        comment += """\\n" ${table_seperator} 
+                    ${table_seperator} c.className[0].text().toString() ${table_seperator}
+                    ${table_seperator} c.testName[0].text().toString() ${table_seperator}
+                    ${table_seperator} c.skipped[0].text().toString() ${table_seperator}
+                    ${table_seperator} c.failedSince[0].text().toString() ${table_seperator}"""
 
 
-    // } 
+    } 
     comment += table_seperator
 
     updateComment(text: "Junit Test Reports:\\n" + comment)
@@ -149,7 +149,7 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
     bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/" +issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
 }
 
-
+@NonCPS
 def getIssueID(){
     String issueKey="CICD"
     String branchName=env.BRANCH_NAME;
