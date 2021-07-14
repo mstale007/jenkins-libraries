@@ -39,7 +39,7 @@ def updateCommentwithBDD(){
 
     String table_seperator=""
     if(isUnix()){
-        table_seperator="`|"
+        table_seperator="\\|"
     }
     else{
         table_seperator="^|"
