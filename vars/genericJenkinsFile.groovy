@@ -27,19 +27,6 @@ def call(Map args =[buildMode: "mvn"]){
                     }
                 }
             }
-            stage("Update Dependencies"){
-                steps{
-                    echo "Updating..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Update Successful"
-                    }
-                    failure{
-                        echo "JIRA: Update Failed"
-                    }
-                }
-            }
             stage("Build"){
                 steps{
                     echo "Building..!"
@@ -98,6 +85,7 @@ def call(Map args =[buildMode: "mvn"]){
                                 ]
                             ]
                         script {
+                            jiraUtil.updateCommentwithBDD()
                             jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
                         }
                     }

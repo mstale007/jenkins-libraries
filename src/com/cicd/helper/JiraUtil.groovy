@@ -12,7 +12,13 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     }
 
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
-    bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+
+    if(isUnix()){
+        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+    }
+    else{
+        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+    }
 }
 
 def updateComment(Map args =[text: "www.google.com"]){
@@ -26,31 +32,87 @@ def updateComment(Map args =[text: "www.google.com"]){
     }
 
     String body = '{\\"body\\": \\"'+args.text+'\\"}'
-    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+
+    if(isUnix()){
+        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+    }
+    else{
+        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+    }
+}
+
+@NonCPS
+def getJSON(response){
+    def jsonSlurper = new JsonSlurperClassic()
+    def cfg = jsonSlurper.parseText(response)
+    jsonSlurper=null
+    return cfg
+}
+
+def updateCommentwithBDD(){
+    filename = 'cucumber-trends.json'
+
+    if(isUnix()){
+        response=sh(script:"cat $filename",returnStdout: true).trim()
+    }
+    else{
+        response=bat(script:"type $filename",returnStdout: true).trim()
+        response=response.substring(response.indexOf("\n")+1).trim()
+    }
+
+    def cucumber_json=getJSON(response)
+
+    String table_seperator=""
+    if(isUnix()){
+        table_seperator="|"
+    }
+    else{
+        table_seperator="^|"
+    }
+
+    String comment=table_seperator
+    for(element in cucumber_json){
+        comment+=table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
+    }
+    comment+=table_seperator+"\\n"
+    for(element in cucumber_json){
+        comment+=table_seperator+element.value[-1].toString().trim()
+    }
+    comment+=table_seperator
+    updateComment("BDD Test Reports:\\n"+comment)
 }
 
 @NonCPS
 def xmlToComment(Map args = [path: "C:/"]){
     String xmlPath = args.path.toString()
 
-    //def xmlFile = readFile xmlPath
     def xml = new XmlSlurper().parse(xmlPath) 
 
-    //echo xml.result.suites.suite[0].name.text()
+    String table_seperator = ""
+    if(isUnix()) {
+        table_seperator = "|"
+    }
+    else{
+        table_seperator = "^|"
+    }
 
-    String comment = "\\n^|"
-    comment += "^|*Class Name*^|" + "^|*Test Name*^|" + "^|*Skipped*^|" + "^|*Failed Since*^|"
+    String comment = "\\n" + table_seperator
+    comment += table_seperator + "*Class Name*" + table_seperator 
+            + table_seperator "*Test Name*" + table_seperator 
+            + table_seperator + "*Skipped*" + table_seperator 
+            + table_seperator + "*Failed Since*" + table_seperator
+
     xml.suites.suite.cases.case.each{
         c-> 
-        comment += "\\n^|" +
-                    "^|"+c.className[0].text().toString()+"^|" +
-                    "^|"+c.testName[0].text().toString()+"^|" +
-                    "^|"+c.skipped[0].text().toString()+"^|" +
-                    "^|"+c.failedSince[0].text().toString()+"^|"
+        comment += "\\n" + table_seperator +
+                    table_seperator + c.className[0].text().toString() + table_seperator +
+                    table_seperator + c.testName[0].text().toString() + table_seperator +
+                    table_seperator + c.skipped[0].text().toString() + table_seperator +
+                    table_seperator + c.failedSince[0].text().toString() + table_seperator
 
 
     } 
-    comment += "^|"
+    comment += table_seperator
 
     updateComment(text: "Junit Test Reports:\\n" + comment)
 }
@@ -95,7 +157,12 @@ def getIssueID(){
     int issueKeyStart=0
     int issueKeyEnd=0
 
-    commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
+    if(isUnix()){
+        commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
+    }
+    else{
+        commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
+    }
 
     issueKeyStart=branchName.indexOf(issueKey)
     issueKeyEnd=issueKeyStart
@@ -141,6 +208,3 @@ def getIssueID(){
     return jiraIssue;
 }
 
-def sh(args){
-    return sh(args.script)
-}
