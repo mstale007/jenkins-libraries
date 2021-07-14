@@ -99,21 +99,21 @@ def xmlToComment(Map args = [path: "C:/"]){
     }
 
     String comment = "\\n" + table_seperator
-    comment += table_seperator + "*Class Name*" + table_seperator 
-            + table_seperator + "*Test Name*" + table_seperator 
-            + table_seperator + "*Skipped*" + table_seperator 
-            + table_seperator + "*Failed Since*" + table_seperator
+    comment += """${table_seperator} *Class Name* ${table_seperator}
+            ${table_seperator} *Test Name* ${table_seperator} 
+            ${table_seperator} *Skipped* ${table_seperator} 
+            ${table_seperator} *Failed Since* ${table_seperator}"""
 
-    xml.suites.suite.cases.case.each{
-        c-> 
-        comment += "\\n" + table_seperator +
-                    table_seperator + c.className[0].text().toString() + table_seperator +
-                    table_seperator + c.testName[0].text().toString() + table_seperator +
-                    table_seperator + c.skipped[0].text().toString() + table_seperator +
-                    table_seperator + c.failedSince[0].text().toString() + table_seperator
+    // xml.suites.suite.cases.case.each{
+    //     c-> 
+    //     comment += "\\n" + table_seperator +
+    //                 table_seperator + c.className[0].text().toString() + table_seperator +
+    //                 table_seperator + c.testName[0].text().toString() + table_seperator +
+    //                 table_seperator + c.skipped[0].text().toString() + table_seperator +
+    //                 table_seperator + c.failedSince[0].text().toString() + table_seperator
 
 
-    } 
+    // } 
     comment += table_seperator
 
     updateComment(text: "Junit Test Reports:\\n" + comment)
