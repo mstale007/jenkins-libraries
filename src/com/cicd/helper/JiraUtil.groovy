@@ -51,8 +51,8 @@ def getJSON(response){
     return cfg
 }
 
-def updateCommentwithBDD(){
-    filename = 'cucumber-trends.json'
+def updateCommentwithBDD(Map args = [filePath: ""]) {
+    filename = args.filePath.toString()
 
     if(isUnix()){
         response=sh(script:"cat $filename",returnStdout: true).trim()
