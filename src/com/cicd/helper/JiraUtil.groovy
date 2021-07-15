@@ -113,13 +113,13 @@ def getIssueID(){
     }
 
     //Check for IssueID in branchName
-    jiraIssue=checkForIssueIdRegex(branchName,issueKeyStart)
+    jiraIssue=checkForIssueIdRegex(message: branchName,startIndex: issueKeyStart)
     if(jiraIssue!=""){
         return jiraIssue
     }
     //Check for IssueID in commitMessage
     else{
-        jiraIssue=checkForIssueIdRegex(commitMessage,0)
+        jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
         return jiraIssue
     }
 }
