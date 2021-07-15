@@ -45,7 +45,7 @@ def updateComment(Map args =[text: "www.google.com"]){
 
 @NonCPS
 def getJSON(Map args = [response: ""]){
-    def cfg = new JsonSlurper.parse(args.response.toString())
+    def cfg = new JsonSlurper().parse(args.response.toString())
     //jsonSlurper=null
     return cfg
 }
