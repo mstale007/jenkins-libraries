@@ -23,6 +23,7 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
 
 
 def updateCommentwithBDD(){
+    //filename="$env.JENKINS_HOME/jobs/jenkins_test_repo/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json"
     filename = 'cucumber-trends.json'
 
     if(isUnix()){
