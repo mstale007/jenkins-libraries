@@ -51,7 +51,7 @@ def getJSON(response){
     return cfg
 }
 
-def updateCommentwithBDD(Map args = [filePath: ""]) {
+def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     filename = args.filePath.toString()
 
     if(isUnix()){
@@ -74,12 +74,11 @@ def updateCommentwithBDD(Map args = [filePath: ""]) {
 
     String comment=table_seperator
     for(element in cucumber_json){
-        comment+=table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
-    }
-    comment+=table_seperator+"\\n"
-    for(element in cucumber_json){
+        comment += table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
         comment+=table_seperator+element.value[-1].toString().trim()
+        comment+=table_seperator+"\\n"
     }
+    
     comment+=table_seperator
     updateComment("BDD Test Reports:\\n"+comment)
 }
