@@ -23,7 +23,6 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     }
 }
 
-@NonCPS
 def updateComment(Map args =[text: "www.google.com"]){
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
@@ -86,10 +85,15 @@ def updateCommentwithBDD(Map args = [filePath: ""]) {
 }
 
 @NonCPS
-def xmlToComment(Map args = [path: "C:/"]){
+def getXML(Map args = [path: ""]) {
     String xmlPath = args.path.toString()
 
-    def xml = new XmlSlurper().parse(xmlPath) 
+    return new XmlSlurper().parse(xmlPath) 
+}
+
+def xmlToComment(Map args = [path: "C:/"]){
+
+    def xml = getXML(path: args.path.toString())
 
     String table_seperator = ""
     if(isUnix()) {
