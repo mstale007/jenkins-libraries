@@ -54,15 +54,17 @@ def getJSON(response){
 def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     filename = args.filePath.toString()
 
-    // if(isUnix()){
-    //     response=sh(script:"cat " + filename,returnStdout: true).trim()
-    // }
-    // else{
-    //     response=bat(script:"type " + filename,returnStdout: true).trim()
-    //     response=response.substring(response.indexOf("\n")+1).trim()
-    // // }
+    echo filename
+    echo args.filePath.toString()
+    if(isUnix()){
+        response=sh(script:"cat " + filename,returnStdout: true).trim()
+    }
+    else{
+        response=bat(script:"type " + filename,returnStdout: true).trim()
+        response=response.substring(response.indexOf("\n")+1).trim()
+    }
 
-    def cucumber_json=getJSON(filename)
+    def cucumber_json=getJSON(response)
 
     String table_seperator=""
     if(isUnix()){
