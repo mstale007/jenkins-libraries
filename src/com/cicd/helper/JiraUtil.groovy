@@ -44,10 +44,9 @@ def updateComment(Map args =[text: "www.google.com"]){
 }
 
 @NonCPS
-def getJSON(response){
-    def jsonSlurper = new JsonSlurperClassic()
-    def cfg = jsonSlurper.parse(response)
-    jsonSlurper=null
+def getJSON(Map args = [response: ""]){
+    def cfg = new JsonSlurper.parse(args.response.toString())
+    //jsonSlurper=null
     return cfg
 }
 
