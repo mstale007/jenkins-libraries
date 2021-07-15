@@ -153,7 +153,6 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
     bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/" +issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
 }
 
-@NonCPS
 def getIssueID(){
     String issueKey="CICD"
     String branchName=env.BRANCH_NAME;
