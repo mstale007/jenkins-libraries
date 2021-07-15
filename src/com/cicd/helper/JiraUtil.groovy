@@ -99,6 +99,8 @@ def getIssueID(){
     }
     else{
         commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf("\n")+1).trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
     }
 
     //Example:
