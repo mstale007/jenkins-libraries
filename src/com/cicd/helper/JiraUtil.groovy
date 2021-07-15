@@ -134,6 +134,7 @@ def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
     while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[A-Z]")){
         issueKeyEnd++
     }
+    echo "issueKeyStart: $issueKeyStart, issueKeyEnd: $issueKeyEnd"
     //If no capital letters found
     if(issueKeyEnd==issueKeyStart || args.message[issueKeyEnd]!="-"){
         return ""
