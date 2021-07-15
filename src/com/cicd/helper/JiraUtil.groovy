@@ -44,24 +44,25 @@ def addAssignee(){
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
     if(isUnix()){
-        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" -d \""+body+"")
+        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
     }   
 }
 
 @NonCPS
 def getAccountId(){
     String accountId = ""
+    String response = ""
     //String commitEmail = "shantanud390@gmail.com"
     if(isUnix()){
-        String commitEmail = sh(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'')
-        String response = sh(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==  \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
+        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        response = sh(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==  \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
-        String commitEmail = bat(returnStdout: true, script: 'git log -1 --pretty=format:'%ae'')
-        String response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
     }                  
     def jsonSlurper = new JsonSlurperClassic()
