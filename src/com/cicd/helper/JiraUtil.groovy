@@ -44,26 +44,27 @@ def updateComment(Map args =[text: "www.google.com"]){
 }
 
 @NonCPS
-def getJSON(Map args = [response: ""]){
-    def cfg = new JsonSlurper().parse(args.response.toString())
-    //jsonSlurper=null
+def getJSON(response){
+    def jsonSlurper = new JsonSlurperClassic()
+    def cfg = jsonSlurper.parse(response)
+    jsonSlurper=null
     return cfg
 }
 
 def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     filename = args.filePath.toString()
 
-    // echo filename
-    // echo args.filePath.toString()
-    // if(isUnix()){
-    //     response=sh(script:"cat " + filename,returnStdout: true).trim()
-    // }
-    // else{
-    //     response=bat(script:"type " + filename,returnStdout: true).trim()
-    //     response=response.substring(response.indexOf("\n")+1).trim()
-    // }
+    echo filename
+    echo args.filePath.toString()
+    if(isUnix()){
+        response=sh(script:"cat " + filename,returnStdout: true).trim()
+    }
+    else{
+        response=bat(script:"type " + filename,returnStdout: true).trim()
+        response=response.substring(response.indexOf("\n")+1).trim()
+    }
 
-    def cucumber_json=getJSON(filename)
+    def cucumber_json=getJSON(response)
 
     String table_seperator=""
     if(isUnix()){

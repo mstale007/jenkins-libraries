@@ -85,7 +85,7 @@ def call(Map args =[buildMode: "mvn"]){
                                 ]
                             ]
                         script {
-                            jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json")
+                            jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json")
                             jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
                         }
                     }
