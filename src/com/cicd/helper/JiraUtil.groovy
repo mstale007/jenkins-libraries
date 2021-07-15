@@ -75,7 +75,11 @@ def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     String comment=table_seperator
     for(element in cucumber_json){
         comment += table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
-        comment+=table_seperator+element.value[-1].toString().trim()
+
+        for(e in element.value) {
+            comment+=table_seperator+e.toString().trim()
+        }
+        
         comment+=table_seperator+"\\n"
     }
     
