@@ -131,7 +131,7 @@ def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
     int issueKeyStart=args.startIndex
     int issueKeyEnd=issueKeyStart
     String jiraIssue=""
-    while(args.message[issueKeyEnd].matches("[A-Z]")){
+    while(issueKeyEnd<message.length() && args.message[issueKeyEnd].matches("[A-Z]")){
         issueKeyEnd++
     }
     //If no capital letters found
@@ -141,8 +141,8 @@ def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
     //Skip "-"
     issueKeyEnd++
     Boolean isNumberPresent=false
-    while(args.message[issueKeyEnd].matches("[0-9]")){
-        number_present=true
+    while(issueKeyEnd<message.length() && args.message[issueKeyEnd].matches("[0-9]")){
+        isNumberPresent=true
         issueKeyEnd++
     }
     if(isNumberPresent){
