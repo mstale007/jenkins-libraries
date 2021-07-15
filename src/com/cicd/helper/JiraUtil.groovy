@@ -85,15 +85,10 @@ def updateCommentwithBDD(Map args = [filePath: ""]) {
 }
 
 @NonCPS
-def getXML(Map args = [path: ""]) {
+String getXML(Map args = [path: ""]) {
     String xmlPath = args.path.toString()
 
-    return new XmlSlurper().parse(xmlPath) 
-}
-
-def xmlToComment(Map args = [path: "C:/"]){
-
-    def xml = getXML(path: args.path.toString())
+    def xml = new XmlSlurper().parse(xmlPath) 
 
     String table_seperator = ""
     if(isUnix()) {
@@ -120,6 +115,11 @@ def xmlToComment(Map args = [path: "C:/"]){
 
     } 
     comment += table_seperator
+}
+
+def xmlToComment(Map args = [path: "C:/"]){
+
+    String comment = getXML(path: args.path.toString())
 
     updateComment(text: "Junit Test Reports:\\n" + comment)
 }
