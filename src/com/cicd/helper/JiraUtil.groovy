@@ -2,7 +2,7 @@ package com.cicd.helper
 import groovy.json.JsonSlurperClassic
 
 def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
-    String issue_ID=getIssueID().toString()
+    String issueID=getIssueID().toString()
 
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
@@ -14,10 +14,10 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
 
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
     if(isUnix()){
-        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
 }
 
@@ -66,7 +66,7 @@ def getJSON(response){
 }
 
 def updateComment(text){
-    String issue_ID=getIssueID().toString()
+    String issueID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
     }
@@ -78,15 +78,14 @@ def updateComment(text){
     String body = '{\\"body\\": \\"'+text+'\\"}'
 
     if(isUnix()){
-        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"/comment\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
 }
 
 def getIssueID(){
-    String issueKey="CICD"
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
     String commitMessage=""
@@ -101,46 +100,54 @@ def getIssueID(){
     else{
         commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
     }
-    issueKeyStart=branchName.indexOf(issueKey)
-    issueKeyEnd=issueKeyStart
-    //Search for issueKey in branchName, if available find exact issueID, else search in commitMesssage 
-    if(issueKeyStart!=-1){
-        issueKeyEnd=branchName.indexOf('-',issueKeyStart)+1
-        while(issueKeyEnd<branchName.length() && branchName[issueKeyEnd].matches("[0-9]")){
-            issueKeyEnd++ 
-        }
-        jiraIssue=branchName.substring(issueKeyStart,issueKeyEnd)
+
+    //Example:
+    //feature/CICD-13-feature-description
+    //If "/" is found start from next index, else start from index 0
+    issueKeyStart=branchName.indexOf("/")
+    if(issueKeyStart==-1){
+        issueKeyStart=0
     }
-    //Search for issueKey in commitMessage, if available find exact issueID, else search in prTitle 
-    else if(commitMessage.indexOf(issueKey)!=-1){
-            issueKeyStart=commitMessage.indexOf(issueKey)
-            issueKeyEnd=issueKeyStart
-            if(issueKeyStart!=-1){
-                issueKeyEnd=commitMessage.indexOf('-',issueKeyStart)+1
-                while(issueKeyEnd<commitMessage.length() && commitMessage[issueKeyEnd].matches("[0-9]")){
-                    issueKeyEnd++ 
-                }
-                jiraIssue=commitMessage.substring(issueKeyStart,issueKeyEnd)
-            }
-    }
-    //Search for issueKey in prTitle, if available find exact issueID, else no issueID mentioned 
     else{
-        if(prTitle!=null){
-            issueKeyStart=prTitle.indexOf(issueKey)
-            issueKeyEnd=issueKeyStart
-            if(issueKeyStart!=-1){
-                issueKeyEnd=prTitle.indexOf('-',issueKeyStart)+1
-                while(issueKeyEnd<prTitle.length() && prTitle[issueKeyEnd].matches("[0-9]")){
-                    issueKeyEnd++ 
-                }
-                jiraIssue=prTitle.substring(issueKeyStart,issueKeyEnd)
-            }
-            else{
-                //No issue mentioned
-                isIssueMentioned=false
-                
-            }
-        }
+        issueKeyStart++
     }
-    return jiraIssue;
+
+    //Check for IssueID in branchName
+    jiraIssue=checkForIssueIdRegex(branchName,issueKeyStart)
+    if(jiraIssue!=""){
+        return jiraIssue
+    }
+    //Check for IssueID in commitMessage
+    else{
+        jiraIssue=checkForIssueIdRegex(commitMessage,0)
+        return jiraIssue
+    }
+}
+
+//Check for pattern [A-Z]+-[0-9]+ (i.e.: issueKey-issueNumber) from given startindex
+def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
+    int issueKeyStart=args.startIndex
+    int issueKeyEnd=issueKeyStart
+    String jiraIssue=""
+    while(args.message[issueKeyEnd].matches("[A-Z]")){
+        issueKeyEnd++
+    }
+    //If no capital letters found
+    if(issueKeyEnd==issueKeyStart || args.message[issueKeyEnd]!="-"){
+        return ""
+    }
+    //Skip "-"
+    issueKeyEnd++
+    Boolean isNumberPresent=false
+    while(args.message[issueKeyEnd].matches("[0-9]")){
+        number_present=true
+        issueKeyEnd++
+    }
+    if(isNumberPresent){
+        jiraIssue=args.message.substring(issueKeyStart,issueKeyEnd)
+        return jiraIssue
+    }
+    else{
+        return ""
+    }
 }

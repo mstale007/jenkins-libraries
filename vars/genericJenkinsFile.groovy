@@ -3,7 +3,6 @@ import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn",jira_issue: ""]){
     def jiraUtil= new JiraUtil()
-    String issueID=""
 
     pipeline{
         agent any
