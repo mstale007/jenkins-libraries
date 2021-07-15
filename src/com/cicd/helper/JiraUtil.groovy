@@ -55,10 +55,10 @@ def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     filename = args.filePath.toString()
 
     if(isUnix()){
-        response=sh(script:"cat $filename",returnStdout: true).trim()
+        response=sh(script:"cat" + filename,returnStdout: true).trim()
     }
     else{
-        response=bat(script:"type $filename",returnStdout: true).trim()
+        response=bat(script:"type" + filename,returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
 
@@ -66,10 +66,10 @@ def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
 
     String table_seperator=""
     if(isUnix()){
-        table_seperator="|"
+        table_seperator="^|"
     }
     else{
-        table_seperator="^|"
+        table_seperator="|"
     }
 
     String comment=table_seperator
@@ -103,17 +103,17 @@ String getXML(Map args = [path: ""]) {
 
     String comment = "\\n" + table_seperator
     comment += table_seperator + "*Class Name*" + table_seperator 
-    comment        += table_seperator + "*Test Name*" + table_seperator 
-    comment        += table_seperator + "*Skipped*" + table_seperator 
-    comment        += table_seperator + "*Failed Since*" + table_seperator
+    comment += table_seperator + "*Test Name*" + table_seperator 
+    comment += table_seperator + "*Skipped*" + table_seperator 
+    comment += table_seperator + "*Failed Since*" + table_seperator
 
     xml.suites.suite.cases.case.each{
         c-> 
         comment += "\\n" + table_seperator
-        comment +=            table_seperator + c.className[0].text().toString() + table_seperator
-        comment +=            table_seperator + c.testName[0].text().toString() + table_seperator
-        comment +=            table_seperator + c.skipped[0].text().toString() + table_seperator
-        comment +=            table_seperator + c.failedSince[0].text().toString() + table_seperator
+        comment += table_seperator + c.className[0].text().toString() + table_seperator
+        comment += table_seperator + c.testName[0].text().toString() + table_seperator
+        comment += table_seperator + c.skipped[0].text().toString() + table_seperator
+        comment += table_seperator + c.failedSince[0].text().toString() + table_seperator
 
 
     } 
