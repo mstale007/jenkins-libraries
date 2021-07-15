@@ -1,7 +1,7 @@
 import com.cicd.helper.JiraUtil
 
 
-def call(Map args =[buildMode: "mvn",jira_issue: ""]){
+def call(Map args =[buildMode: "mvn",jira_issue_key: ""]){
     def jiraUtil= new JiraUtil()
     String issueID=""
 
@@ -17,6 +17,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         stages{
             stage("Initialize"){
                 steps{
+                    echo "JIRA issue key: $args.jira_issue_key"
                     echo "Branch name is: $env.BRANCH_NAME"
                     echo "Intializing..!"
                 }
@@ -189,9 +190,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         post{
             always{
                 script{
-                    jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
-                    jiraUtil.updateComment("Unix updated me!!")
-                    jiraUtil.updateCommentwithBDD()
+                    jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com",issueKey: args.jira_issue_key)
+                    jiraUtil.updateComment(comment: "Unix updated me!!", issueKey: args.jira_issue_key)
+                    jiraUtil.updateCommentwithBDD(issueKey: args.jira_issue_key)
                 }
                 echo "JIRA: Added BDD test reports"
             }

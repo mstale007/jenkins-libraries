@@ -1,8 +1,8 @@
 package com.cicd.helper
 import groovy.json.JsonSlurperClassic
 
-def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
-    String issue_ID=getIssueID().toString()
+def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com", issueKey: ""]){
+    String issueID=getIssueID(issueKey: args.issueKey).toString()
 
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
@@ -14,15 +14,15 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
 
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
     if(isUnix()){
-        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
 }
 
 
-def updateCommentwithBDD(){
+def updateCommentwithBDD(args){
     filename = 'cucumber-trends.json'
 
     if(isUnix()){
@@ -54,7 +54,7 @@ def updateCommentwithBDD(){
         comment+=table_seperator+element.value[-1].toString().trim()
     }
     comment+=table_seperator
-    updateComment("BDD Test Reports:\\n"+comment)
+    updateComment(comment: "BDD Test Reports:\\n"+comment,issueKey: args.issueKey)
 }
 
 @NonCPS
@@ -65,8 +65,8 @@ def getJSON(response){
     return cfg
 }
 
-def updateComment(text){
-    String issue_ID=getIssueID().toString()
+def updateComment(args){
+    String issueID=getIssueID(issueKey: args.issueKey).toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
     }
@@ -75,18 +75,18 @@ def updateComment(text){
         return
     }
 
-    String body = '{\\"body\\": \\"'+text+'\\"}'
+    String body = '{\\"body\\": \\"'+args.comment+'\\"}'
 
     if(isUnix()){
-        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"/comment\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issueID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
 }
 
-def getIssueID(){
-    String issueKey="CICD"
+def getIssueID(args){
+    String issueKey=args.issueKey
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
     String commitMessage=""
@@ -94,6 +94,10 @@ def getIssueID(){
     Boolean isIssueMentioned=true
     int issueKeyStart=0
     int issueKeyEnd=0
+
+    if(args.issueKey.equals("")){
+        return jiraIssue
+    }
 
     if(isUnix()){
         commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
