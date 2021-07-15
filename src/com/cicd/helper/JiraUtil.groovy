@@ -116,14 +116,12 @@ def getIssueID(){
 
     //Check for IssueID in branchName
     jiraIssue=checkForIssueIdRegex(message: branchName,startIndex: issueKeyStart)
-    echo "IssueID in branch: $jiraIssue"
     if(jiraIssue!=""){
         return jiraIssue
     }
     //Check for IssueID in commitMessage
     else{
         jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
-        echo "IssueID in commit: $jiraIssue"
         return jiraIssue
     }
 }
@@ -136,8 +134,6 @@ def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
     while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[A-Z]")){
         issueKeyEnd++
     }
-    echo args.message
-    echo "issueKeyStart: $issueKeyStart, issueKeyEnd: $issueKeyEnd"
     //If no capital letters found
     if(issueKeyEnd==issueKeyStart || args.message[issueKeyEnd]!="-"){
         return ""
