@@ -23,10 +23,16 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     }
 }
 
-def updateComment(Map args =[text: "www.google.com"]){
+def updateComment(Map args =[text: "", issue: ""]){
+
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
+    }
+    else {
+        if(!args.issue.equals("")) {
+            issue_ID = args.issue.toString()
+        }
     }
     else{
         echo "No issueID found!"
