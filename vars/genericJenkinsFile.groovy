@@ -16,7 +16,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
             FAIL_STAGE = ""
-            PIPELINE_NAME = env.JOB_NAME.split('/')
+            PIPELINE_NAME = env.JOB_NAME.split('/')[0]
         }
 
         stages {
@@ -24,7 +24,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo env.PIPELINE_NAME[0]
+                    echo env.PIPELINE_NAME
                     script {
                         LAST_STAGE = env.STAGE_NAME
                     }
