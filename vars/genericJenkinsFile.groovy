@@ -227,7 +227,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
             }
             failure {
                 script {
-                    String issue_ID = jiraUtil.getIssueID().toString()
+                    String issueID = jiraUtil.getIssueID().toString()
 
                     if(!issueID.equals("")){
                         echo "IssueId found: $issueID"
@@ -235,7 +235,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
                     else{
                         String issueId = jiraUtil.createIssue()
 
-                        jiraUtil.updateComment(text: "Build Failed", issue: issueId)
+                        jiraUtil.updateComment(text: "Build Failed shizz", issue: issueId)
                     }
                 }
             }
