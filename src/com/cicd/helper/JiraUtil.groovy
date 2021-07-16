@@ -140,8 +140,14 @@ def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
     }
     String link = args.attachmentLink.toString()
 
-    bat(script: "powershell Compress-Archive " + link + " " + link + ".zip")
-    bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+    if(isUnix()) {
+        sh(script: "zip " + link + ".zip " + link)
+        sh(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+    }
+    else {
+        bat(script: "powershell Compress-Archive " + link + " " + link + ".zip")
+        bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+    }
 }
 
 def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
@@ -155,7 +161,13 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
     }
     String acc = args.text.toString()
     String body ='{\\"accountId\\": \\"' + acc + '\\"}'
-    bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/" +issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+
+    if(isUnix()) {
+       sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/" +issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+    }
+    else {
+        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/" +issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+    }
 }
 
 def getIssueID(){
