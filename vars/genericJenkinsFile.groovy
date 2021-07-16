@@ -3,6 +3,7 @@ import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn",jira_issue: ""]){
     def jiraUtil= new JiraUtil()
+    String failedStage=env.STAGE_NAME
 
     pipeline{
         agent any
@@ -16,6 +17,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
         stages{
             stage("Initialize"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Branch name is: $env.BRANCH_NAME"
                     echo "Intializing..!"
                 }
@@ -30,6 +34,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Update Dependencies"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Updating..!"
                 }
                 post{
@@ -43,6 +50,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Build"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Building..!"
                 }
                 post{
@@ -56,6 +66,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Unit Tests"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Unit Testing..!"
                 }
                 post{
@@ -69,6 +82,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Install"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Installing..!"
                 }
                 post{
@@ -82,6 +98,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Scoverage Report"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Reports running..!"
                 }
                 post{
@@ -95,6 +114,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Run Sonar"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Reports running..!"
                 }
                 post{
@@ -108,6 +130,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Integration Test"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Integration Testing..!"
                 }
                 post{
@@ -121,6 +146,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Close artificat version"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Close artificat version..!"
                     //Forcefully trying to give error
                     bat "abcd"
@@ -136,6 +164,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Artifactory + Docker + Package"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "ADP ing..!"
                 }
                 post{
@@ -149,6 +180,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Deploy to INT"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Deploying..!"
                 }
                 post{
@@ -162,6 +196,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Performance Test"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Performance Testing..!"
                 }
                 post{
@@ -175,6 +212,9 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Staging Test"){
                 steps{
+                    script{
+                        failedStage=env.STAGE_NAME
+                    }
                     echo "Staging..!"
                 }
                 post{
@@ -201,7 +241,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             failure{
                 script{
                     echo "Error"
-                    jiraUtil.updateCommentwithFailMessage(env.STAGE_NAME)
+                    jiraUtil.updateCommentwithFailMessage(failedStage)
                     jiraUtil.updateCommentwithCommitterMention()
                 }
             }
