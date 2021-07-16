@@ -151,13 +151,13 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             failure {
                 echo "Failure"
                 script {
+                    env.FAIL_STAGE = LAST_STAGE
+                    
                     String issueID = jiraUtil.getIssueID().toString()
                     if(issueID.equals("")){
                         issueID = jiraUtil.createIssue()
                         jiraUtil.addAssignee(issue: issueID)
                     }
-
-                    env.FAIL_STAGE = LAST_STAGE
 
                     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
                     if(env.UNIT_TEST_REPORT == true) {
