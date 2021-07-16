@@ -2,6 +2,7 @@ import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn", issueKey: ""]){
     def jiraUtil= new JiraUtil()
+    def LAST_STAGE = ""
 
     pipeline{
         agent any
@@ -17,9 +18,9 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
         stages{
             stage("Initialize"){
                 steps{
+                    echo "Stage: $env.STAGE_NAME"
+                    LAST_STAGE = env.STAGE_NAME
                     echo "Branch name is: $env.BRANCH_NAME"
-                    bat 'set'
-                    echo "Intializing..!"
                 }
                 post{
                     success{
@@ -32,7 +33,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
             }
             stage("Build"){
                 steps{
-                    echo "Building..!"
+                    echo "Stage: $env.STAGE_NAME"
+                    LAST_STAGE = env.STAGE_NAME
                     bat "mvn clean install -DskipTests"
                 }
                 post{
@@ -46,8 +48,9 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
             }
             stage("Unit Tests"){
                 steps{
-                    echo "Unit Testing..!"
-                     bat "mvn -Dtest=UnitTests test jacoco:report"
+                    echo "Stage: $env.STAGE_NAME"
+                    LAST_STAGE = env.STAGE_NAME
+                    bat "mvn -Dtest=UnitTests test jacoco:report"
                 }
                 post{
                     always {
@@ -67,12 +70,23 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
             }
             stage('Run on localhost') {
                 steps {
-                    bat "START /B java -jar target/spring-boot-rest-api-tutorial-0.0.1-SNAPSHOT.jar"
+                    echo "Stage: $env.STAGE_NAME"
+                    LAST_STAGE = env.STAGE_NAME
+
+                    script {
+                        if(isUnix()) {
+                            sh "java -jar target/spring-boot-rest-api-tutorial-0.0.1-SNAPSHOT.jar &"
+                        }
+                        else {
+                            bat "START /B java -jar target/spring-boot-rest-api-tutorial-0.0.1-SNAPSHOT.jar"
+                        }
+                    }
                 }
             }
             stage("BDD Test"){
                 steps{
-                    echo "Performance test"
+                    echo "Stage: $env.STAGE_NAME"
+                    LAST_STAGE = env.STAGE_NAME
                     bat "mvn -Dtest=TestRunner test"
                 }
                 post{
@@ -94,152 +108,32 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
                     }
                 }
             }
-            stage("Install"){
-                steps{
-                    echo "Installing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Install Successful"
+            post{
+                always{
+                    script{
+                        //jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
+                        //jiraUtil.addAssignee()
+                        echo "Now creating.."
+                        
                     }
-                    failure{
-                        echo "JIRA: Install Failed"
-                    }
+                    echo "JIRA: Added BDD test reports"
                 }
-            }
-            stage("Scoverage Report"){
-                steps{
-                    echo "Reports running..!"
+                success {
+                    echo "Build success"
                 }
-                post{
-                    success{
-                        echo "JIRA: S Report Successful"
-                    }
-                    failure{
-                        echo "JIRA: S Report Failed"
-                    }
-                }
-            }
-            stage("Run Sonar"){
-                steps{
-                    echo "Reports running..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: S Report Successful"
-                    }
-                    failure{
-                        echo "JIRA: S Report Failed"
-                    }
-                }
-            }
-            stage("Integration Test"){
-                steps{
-                    echo "Integration Testing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Integration Tests Successful"
-                    }
-                    failure{
-                        echo "JIRA: Integration Tests Failed"
-                    }
-                }
-            }
-            stage("Close artificat version"){
-                steps{
-                    echo "Close artificat version..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Close artificat version Successful"
-                    }
-                    failure{
-                        echo "JIRA: Close artificat version Failed"
-                    }
-                }
-            }
-            stage("Artifactory + Docker + Package"){
-                steps{
-                    echo "ADP ing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: ADP Successful"
-                    }
-                    failure{
-                        echo "JIRA: ADP Failed"
-                    }
-                }
-            }
-            stage("Deploy to INT"){
-                steps{
-                    echo "Deploying..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Deployment Successful"
-                    }
-                    failure{
-                        echo "JIRA: Deployment Failed"
-                    }
-                }
-            }
-            stage("Performance Test"){
-                steps{
-                    echo "Performance Testing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Performance Testing Successful"
-                    }
-                    failure{
-                        echo "JIRA: Performance Testing Failed"
-                    }
-                }
-            }
-            stage("Staging Test"){
-                steps{
-                    echo "Staging..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Staging Test Successful"
-                    }
-                    failure{
-                        echo "JIRA: Staging Test Failed"
-                    }
-                }
-            }
-        }
-        post{
-            always{
-                script{
-                    //jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
-                    //jiraUtil.addAssignee()
-                    echo "Now creating.."
+                failure {
+                    script {
+                        String issueID = jiraUtil.getIssueID().toString()
+                        if(issueID.equals("")){
+                            issueID = jiraUtil.createIssue()
+                        }
+
+                        jiraUtil.updateComment(text: "Build Failed at stage $LAST_STAGE", issue: issueID)
                     
-                }
-                echo "JIRA: Added BDD test reports"
-            }
-            success {
-                echo "Build success"
-            }
-            failure {
-                script {
-                    String issueID = jiraUtil.getIssueID().toString()
-
-                    if(!issueID.equals("")){
-                        jiraUtil.updateComment(text: "Build Failed shizz")
-                    }
-                    else{
-                        String issueId = jiraUtil.createIssue()
-
-                        jiraUtil.updateComment(text: "Build Failed shizz", issue: issueId)
                     }
                 }
-            }
             //cleanup{} 
+            }
         }
     }
 }
