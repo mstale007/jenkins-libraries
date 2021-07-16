@@ -31,7 +31,7 @@ def updateComment(Map args =[text: "www.google.com"]){
 }
 
 def accountTest(){
-    String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+    String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'").trim()
     echo "Email: $commitEmail"
 }
                        
