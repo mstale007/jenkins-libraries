@@ -16,6 +16,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
             FAIL_STAGE = ""
+            PIPELINE_NAME = env.JOB_NAME.split('/')
         }
 
         stages {
@@ -23,6 +24,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
+                    echo env.PIPELINE_NAME
+                    echo env.BUILD_URL
 
                     script {
                         LAST_STAGE = env.STAGE_NAME
@@ -43,7 +46,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        error "Prohram failed"
+                        
                         if(isUnix()) {
                             sh "mvn clean install -DskipTests"
                         }
