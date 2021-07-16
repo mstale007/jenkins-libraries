@@ -66,6 +66,7 @@ def getAccountId(){
     }
     else{
         String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        echo "email: $commitEmail"
         response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
     }                  
