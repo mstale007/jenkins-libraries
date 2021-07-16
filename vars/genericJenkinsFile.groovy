@@ -151,12 +151,10 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             failure {
                 echo "Failure"
                 script {
-                    env.FAIL_STAGE = LAST_STAGE
-                    echo env.FAIL_STAGE
-                    
+
                     String issueID = jiraUtil.getIssueID().toString()
                     if(issueID.equals("")){
-                        issueID = jiraUtil.createIssue()
+                        issueID = jiraUtil.createIssue(failStage: LAST_STAGE)
                         jiraUtil.addAssignee(issue: issueID)
                     }
 
