@@ -54,7 +54,7 @@ def updateCommentwithBDD(){
         comment+=table_seperator+element.value[-1].toString().trim()
     }
     comment+=table_seperator
-    updateComment("BDD Test Reports:\\n"+comment)
+    updateComment("{panel:bgColor=#e3fcef}\nBDD Test Reports:\n{panel}\\n"+comment)
 }
 
 @NonCPS
