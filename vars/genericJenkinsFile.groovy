@@ -13,8 +13,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
-            UNIT_TEST_REPORT = false
-            BDD_REPORT = false
+            UNIT_TEST_REPORT = true
+            BDD_REPORT = true
         }
 
         stages {
@@ -79,8 +79,10 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     always {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
+                    }
+                     skipped {
                         script {
-                            env.UNIT_TEST_REPORT = true
+                            env.UNIT_TEST_REPORT = false
                         }
                     }
                 }
@@ -109,7 +111,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         LAST_STAGE = env.STAGE_NAME
 
                         if(isUnix()) {
-                            bshat "mvn -Dtest=TestRunner test"
+                            sh "mvn -Dtest=TestRunner test"
                         }
                         else {
                             bat "mvn -Dtest=TestRunner test"
@@ -128,8 +130,10 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                                     'value': 'Firefox'
                                 ]
                             ]
+                    }
+                    skipped {
                         script {
-                            env.BDD_REPORT = true
+                            env.BDD_REPORT = false
                         }
                     }
                 }
@@ -167,6 +171,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     else {
                         jiraUtil.updateComment(text: "Build $env.BUILD_NUMBER: Unit tests were not performed due to failure at an earlier stage", issue: issueID)
                     }
+
                     if(env.BDD_REPORT) {
                         //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
                         jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
