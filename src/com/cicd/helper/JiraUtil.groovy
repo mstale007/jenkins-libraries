@@ -88,8 +88,6 @@ def createIssue(){
     issueKey = parser.key
     return issueKey;
     }
-    
-} 
 
 def getIssueID(){
     String issueKey="CICD"
