@@ -199,8 +199,11 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                 echo "JIRA: Added BDD test reports"
             }
             failure{
-                jiraUtil.updateCommentwithFailMessage(env.STAGE_NAME)
-                jiraUtil.updateCommentwithCommitterMention()
+                script{
+                    echo "Error"
+                    jiraUtil.updateCommentwithFailMessage(env.STAGE_NAME)
+                    jiraUtil.updateCommentwithCommitterMention()
+                }
             }
             //cleanup{}
         }
