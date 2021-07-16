@@ -13,8 +13,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
-            UNIT_TEST_REPORT = true
-            BDD_REPORT = true
+            UNIT_TEST_REPORT = false
+            BDD_REPORT = false
         }
 
         stages {
@@ -66,6 +66,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
+                        env.UNIT_TEST_REPORT = true
 
                         if(isUnix()) {
                             sh "mvn -Dtest=UnitTests test jacoco:report"
@@ -79,11 +80,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     always {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
-                    }
-                    notBuilt {
-                        script {
-                            env.UNIT_TEST_REPORT = false
-                        }
                     }
                 }
             }
@@ -109,7 +105,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     script {
                         LAST_STAGE = env.STAGE_NAME
-
+                        env.BDD_REPORT = true
+                        
                         if(isUnix()) {
                             sh "mvn -Dtest=TestRunner test"
                         }
@@ -130,11 +127,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                                     'value': 'Firefox'
                                 ]
                             ]
-                    }
-                    notBuilt {
-                        script {
-                            env.BDD_REPORT = false
-                        }
                     }
                 }
             }
