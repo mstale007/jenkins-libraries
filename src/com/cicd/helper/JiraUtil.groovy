@@ -206,7 +206,6 @@ def createIssue(){
     parser = jsonSlurper.parseText(response)
     issueKey = parser.key
     return issueKey;
-    }
     
 } 
 
