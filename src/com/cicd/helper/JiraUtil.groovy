@@ -100,6 +100,7 @@ def getAccountId(){
     }
     else{
         String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        commitEmail=commitEmail.substring(commitEmail.indexOf(">")+1).trim()
         commitEmail=commitEmail.substring(commitEmail.indexOf("\n")+1).trim()
         commitEmail=commitEmail[1..-1]
         echo "commitEmail : $commitEmail"
