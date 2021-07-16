@@ -114,22 +114,22 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         }
                     } 
                 }
-            }
-            post{
-                always {
-                    cucumber buildStatus: 'UNSTABLE',
-                        reportTitle: 'My report',
-                        fileIncludePattern: '**/*.json',
-                        trendsLimit: 10,
-                        classifications: [
-                            [
-                                'key': 'Browser',
-                                'value': 'Firefox'
+                post{
+                    always {
+                        cucumber buildStatus: 'UNSTABLE',
+                            reportTitle: 'My report',
+                            fileIncludePattern: '**/*.json',
+                            trendsLimit: 10,
+                            classifications: [
+                                [
+                                    'key': 'Browser',
+                                    'value': 'Firefox'
+                                ]
                             ]
-                        ]
-                    script {
-                        jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json")
-                        jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
+                        script {
+                            jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json")
+                            jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
+                        }
                     }
                 }
             }
