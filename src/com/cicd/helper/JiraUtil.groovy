@@ -191,8 +191,15 @@ def getAccountId(){
 }
 
 @NonCPS
-def createIssue(){
+String parseJsonForIssueId(response) {
     def jsonSlurper = new JsonSlurperClassic()
+    parser = jsonSlurper.parseText(response)
+    issueKey = parser.key
+    return issueKey; 
+}
+
+def createIssue(){
+    
     String issueKey = ""
     String response =""
     String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"CICD\\"},\\"summary\\": \\"New Issue Created.\\",\\"description\\": \\"Creating of an issue using project keys and issue type names using the REST API\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
@@ -203,11 +210,10 @@ def createIssue(){
         response  = bat(returnStdout: true,script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
     }
-    parser = jsonSlurper.parseText(response)
-    issueKey = parser.key
-    return issueKey;
-    
+    return parseJsonForIssueId(response) 
 } 
+
+
 
 def getIssueID(){
     String issueKey = env.ISSUE_KEY 
