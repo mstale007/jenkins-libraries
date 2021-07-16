@@ -42,7 +42,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        //error "Prohram failed"
+                        error "Prohram failed"
                         if(isUnix()) {
                             sh "mvn clean install -DskipTests"
                         }
