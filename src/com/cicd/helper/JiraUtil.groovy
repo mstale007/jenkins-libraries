@@ -103,6 +103,7 @@ def getIssueID(){
         commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
     }
 
+    echo "$branchName"
     //Example:
     //feature/CICD-13-feature-description
     //If "/" is found start from next index, else start from index 0
@@ -131,9 +132,11 @@ def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
     int issueKeyStart=args.startIndex
     int issueKeyEnd=issueKeyStart
     String jiraIssue=""
+    echo "issueKeyStart: $issueKeyStart issueKeyEnd: $issueKeyEnd"
     while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[A-Z]")){
         issueKeyEnd++
     }
+    echo "issueKeyStart: $issueKeyStart issueKeyEnd: $issueKeyEnd"
     //If no capital letters found
     if(issueKeyEnd==issueKeyStart || args.message[issueKeyEnd]!="-"){
         return ""
@@ -145,6 +148,7 @@ def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
         isNumberPresent=true
         issueKeyEnd++
     }
+    echo "issueKeyStart: $issueKeyStart issueKeyEnd: $issueKeyEnd"
     if(isNumberPresent){
         jiraIssue=args.message.substring(issueKeyStart,issueKeyEnd)
         return jiraIssue
