@@ -138,7 +138,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             always{
                 script{
                     //jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
-                    //jiraUtil.addAssignee()
+                    jiraUtil.addAssignee()
                     echo "Now creating.."
                     
                 }

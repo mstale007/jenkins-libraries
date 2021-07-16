@@ -187,11 +187,11 @@ def getAccountId(){
     String response = ""
     //String commitEmail = "shantanud390@gmail.com"
     if(isUnix()){
-        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
         response = sh(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==  \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
-        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
         response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
     }                  
