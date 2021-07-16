@@ -189,7 +189,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                 script{
                     //jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
                     //jiraUtil.updateComment(text: "Build Failed")
-                    jiraUtil.accountTest()
+                    jiraUtil.getAccountId()
                 }
                 echo "JIRA: Added BDD test reports"
             }
