@@ -24,7 +24,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
-
+                    echo env.PIPELINE_NAME[0]
                     script {
                         LAST_STAGE = env.STAGE_NAME
                     }
