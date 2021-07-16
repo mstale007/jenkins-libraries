@@ -16,7 +16,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
             FAIL_STAGE = ""
-            PIPELINE_NAME = env.JOB_NAME.split('/')
+            PIPELINE_NAME = env.JOB_NAME.split('/')[0]
         }
 
         stages {
@@ -24,8 +24,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo env.PIPELINE_NAME
-                    echo env.BUILD_URL
 
                     script {
                         LAST_STAGE = env.STAGE_NAME
@@ -142,9 +140,9 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     String issueID = jiraUtil.getIssueID().toString()
                     if(!issueID.equals("")){
                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
-                        jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
-                        //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
-                        jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                        jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/${env.PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
+                        //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/${env.PIPELINE_NAME}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
+                        jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/${env.PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
                     }
                     else {
                         echo "No issue updated/ no new issue created"
@@ -163,7 +161,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
                     if(env.UNIT_TEST_REPORT == true) {
-                        jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
+                        jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/${env.PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
                     }
                     else {
                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Unit tests were not performed due to failure at an earlier stage", issue: issueID)
@@ -171,7 +169,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     if(env.BDD_REPORT == true) {
                         //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
-                        jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                        jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/${env.PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
                     }
                     else {
                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: BDD tests were not performed due to failure at an earlier stage", issue: issueID)
