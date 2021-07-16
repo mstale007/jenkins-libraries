@@ -13,6 +13,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
+            UNIT_TEST_REPORT = false
+            BDD_REPORT = false
         }
 
         stages {
@@ -78,7 +80,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
                         script {
-                            jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")                    
+                            env.UNIT_TEST_REPORT = true
                         }
                     }
                 }
@@ -127,28 +129,27 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                                 ]
                             ]
                         script {
-                            //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json")
-                            jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
+                            env.BDD_REPORT = true
                         }
                     }
                 }
             }
         }
         post{
-            always{
-                script{
-                    //jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
-                    jiraUtil.addAssignee()
-                    echo "Now creating.."
-                    
-                }
-            }
             success {
                 echo "Success"
                 script {
                     String issueID = jiraUtil.getIssueID().toString()
                     if(!issueID.equals("")){
-                        jiraUtil.updateComment(text: "Build Failed at stage $LAST_STAGE", issue: issueID)
+                        jiraUtil.updateComment(text: "Build Successful", issue: issueID)
+
+                        if(env.UNIT_TEST_REPORT) {
+                            jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
+                        }
+                        if(env.BDD_REPORT) {
+                            //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
+                            jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                        }
                     }
                     else {
                         echo "No issue updated/ no new issue created"
@@ -161,10 +162,17 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     String issueID = jiraUtil.getIssueID().toString()
                     if(issueID.equals("")){
                         issueID = jiraUtil.createIssue()
+                        jiraUtil.addAssignee(issue: issueID)
                     }
 
                     jiraUtil.updateComment(text: "Build Failed at stage $LAST_STAGE", issue: issueID)
-                
+                    if(env.UNIT_TEST_REPORT) {
+                        jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
+                    }
+                    if(env.BDD_REPORT) {
+                        //jiraUtil.updateCommentwithBDD(filePath: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
+                        jiraUtil.sendAttachment(attachmentLink: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                    }
                 }
             }
             //cleanup{} 

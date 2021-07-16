@@ -4,17 +4,7 @@ import groovy.json.JsonSlurperClassic
 
 def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com", issue: ""]){
     
-    String issue_ID=getIssueID().toString()
-    if(!issueID.equals("")){
-        echo "IssueId found: $issueID"
-    }
-    else if(!args.issue.equals("")) {
-            issue_ID = args.issue.toString()
-    }
-    else{
-        echo "No issueID found!"
-        return
-    }
+    String issue_ID = args.issue.toString()
 
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
 
@@ -28,17 +18,7 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
 
 def updateComment(Map args =[text: "", issue: ""]){
 
-    String issue_ID=getIssueID().toString()
-    if(!issueID.equals("")){
-        echo "IssueId found: $issueID"
-    }
-    else if(!args.issue.equals("")) {
-            issue_ID = args.issue.toString()
-    }
-    else{
-        echo "No issueID found!"
-        return
-    }
+    String issue_ID = args.issue.toString()
 
     String body = '{\\"body\\": \\"'+args.text+'\\"}'
 
@@ -58,7 +38,9 @@ def getJSON(response){
     return cfg
 }
 
-def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
+def updateCommentwithBDD(Map args = [filePath: "C:/", issue: ""]) {
+
+    String issue_ID = args.issue.toString()
     filename = args.filePath.toString()
 
     if(isUnix()){
@@ -72,7 +54,7 @@ def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     }
 
     def cucumber_json=getJSON(response)
-    echo cucumber_json
+    
     String table_seperator=""
     if(isUnix()){
         table_seperator="^|"
@@ -93,7 +75,7 @@ def updateCommentwithBDD(Map args = [filePath: "C:/"]) {
     }
     
     comment+=table_seperator
-    updateComment("BDD Test Reports:\\n"+comment)
+    updateComment("BDD Test Reports:\\n"+comment, issue_ID)
 }
 
 @NonCPS
@@ -129,27 +111,17 @@ String getXML(Map args = [path: ""]) {
     comment += table_seperator
 }
 
-def xmlToComment(Map args = [path: "C:/"]){
+def xmlToComment(Map args = [path: "C:/", issue: ""]){
 
     String comment = getXML(path: args.path.toString())
+    String issue_ID = args.issue.toString()
 
-    updateComment(text: "Junit Test Reports:\\n" + comment)
+    updateComment(text: "Junit Test Reports:\\n" + comment, issue_ID)
 }
 
 def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
     
-    String issue_ID=getIssueID().toString()
-    if(!issueID.equals("")){
-        echo "IssueId found: $issueID"
-    }
-    else if(!args.issue.equals("")) {
-            issue_ID = args.issue.toString()
-    }
-    else{
-        echo "No issueID found!"
-        return
-    }
-
+    String issue_ID = args.issue.toString()
     String link = args.attachmentLink.toString()
 
     if(isUnix()) {
@@ -163,19 +135,8 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
 }
 
 def addAssignee(Map args = [issue: ""]){
-    
-    String issue_ID=getIssueID().toString()
-    if(!issueID.equals("")){
-        echo "IssueId found: $issueID"
-    }
-    else if(!args.issue.equals("")) {
-            issue_ID = args.issue.toString()
-    }
-    else{
-        echo "No issueID found!"
-        return
-    }
 
+    String issue_ID = args.issue.toString()
     String accountId = getAccountId().toString()
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
