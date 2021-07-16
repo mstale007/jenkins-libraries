@@ -18,7 +18,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
             stage("Initialize"){
                 steps{
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo env.JOB_NAME
+                    bat 'set'
                     echo "Intializing..!"
                 }
                 post{
