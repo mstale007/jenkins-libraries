@@ -122,6 +122,8 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             stage("Close artificat version"){
                 steps{
                     echo "Close artificat version..!"
+                    //Forcefully trying to give error
+                    bat "abcd"
                 }
                 post{
                     success{
@@ -195,6 +197,10 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
 
                 }
                 echo "JIRA: Added BDD test reports"
+            }
+            failure{
+                jiraUtil.updateCommentwithFailMessage(env.STAGE_NAME)
+                jiraUtil.updateCommentwithCommitterMention()
             }
             //cleanup{}
         }

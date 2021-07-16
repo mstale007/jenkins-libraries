@@ -85,6 +85,10 @@ def updateComment(text){
     }
 }
 
+def updateCommentwithFailMessage(stageName){
+    updateComment("{panel:bgColor=#ffebe6}\\nBuild Failed at stage: $stage\\n{panel}\\n")
+}
+
 def updateCommentwithCommitterMention(){
     String accountId=getAccountId()
     updateComment("Committed by: [~accountid:$accountId]")
