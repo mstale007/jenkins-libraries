@@ -138,15 +138,25 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             always{
                 script{
                     //jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
-                    jiraUtil.addAssignee()
+                    //jiraUtil.addAssignee()
                     echo "Now creating.."
                     
                 }
             }
             success {
-                echo "Build success"
+                echo "Success"
+                script {
+                    String issueID = jiraUtil.getIssueID().toString()
+                    if(!issueID.equals("")){
+                        jiraUtil.updateComment(text: "Build Failed at stage $LAST_STAGE", issue: issueID)
+                    }
+                    else {
+                        echo "No issue updated/ no new issue created"
+                    }
+                }
             }
             failure {
+                echo "Failure"
                 script {
                     String issueID = jiraUtil.getIssueID().toString()
                     if(issueID.equals("")){

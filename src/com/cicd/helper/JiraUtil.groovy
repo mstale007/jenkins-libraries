@@ -2,11 +2,14 @@ package com.cicd.helper
 
 import groovy.json.JsonSlurperClassic
 
-def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
+def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com", issue: ""]){
+    
     String issue_ID=getIssueID().toString()
-
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
+    }
+    else if(!args.issue.equals("")) {
+            issue_ID = args.issue.toString()
     }
     else{
         echo "No issueID found!"
@@ -133,15 +136,20 @@ def xmlToComment(Map args = [path: "C:/"]){
     updateComment(text: "Junit Test Reports:\\n" + comment)
 }
 
-def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
-    String issue_ID = getIssueID().toString()
+def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
+    
+    String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
+    }
+    else if(!args.issue.equals("")) {
+            issue_ID = args.issue.toString()
     }
     else{
         echo "No issueID found!"
         return
     }
+
     String link = args.attachmentLink.toString()
 
     if(isUnix()) {
@@ -154,15 +162,20 @@ def sendAttachment(Map args = [attachmentLink: "target/site/"]) {
     }
 }
 
-def addAssignee(){
+def addAssignee(Map args = [issue: ""]){
+    
     String issue_ID=getIssueID().toString()
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
+    }
+    else if(!args.issue.equals("")) {
+            issue_ID = args.issue.toString()
     }
     else{
         echo "No issueID found!"
         return
     }
+
     String accountId = getAccountId().toString()
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
@@ -185,16 +198,18 @@ String getAccountIdParser(response) {
 def getAccountId(){
     String accountId = ""
     String response = ""
-    //String commitEmail = "shantanud390@gmail.com"
+    
     if(isUnix()){
-        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
         response = sh(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==  \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
         String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
-        echo "1"
+        commitEmail=commitEmail.substring(commitEmail.indexOf(">")+1).trim()
+        commitEmail=commitEmail.substring(commitEmail.indexOf("\n")+1).trim()
+        commitEmail=commitEmail[1..-2]
+        echo "commitEmail : $commitEmail"
         response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
-        echo "2"
         response = response.substring(response.indexOf("\n")+1).trim()
     }                  
     
@@ -222,8 +237,6 @@ def createIssue(){
     }
     return parseJsonForIssueId(response) 
 } 
-
-
 
 def getIssueID(){
     String issueKey = env.ISSUE_KEY 
