@@ -30,6 +30,10 @@ def updateComment(Map args =[text: "www.google.com"]){
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
+def accountTest(){
+    String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+    println(commitEmail)
+}
                        
 def addAssignee(){
     String issue_ID=getIssueID().toString()
