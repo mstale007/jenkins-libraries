@@ -218,6 +218,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
                     jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
                     jiraUtil.updateComment(text: "Build Failed")
                     //jiraUtil.addAssignee()
+                    echo "Now creating.."
                     jiraUtil.createIssue()
                 }
                 echo "JIRA: Added BDD test reports"
