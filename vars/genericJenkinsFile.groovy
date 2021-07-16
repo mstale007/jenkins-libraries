@@ -3,7 +3,7 @@ import com.cicd.helper.JiraUtil
 def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
     def jiraUtil= new JiraUtil()
     def LAST_STAGE = ""
-
+    def PIPELINE_ARRAY = env.JOB_NAME.split('/')
     pipeline {
         agent any
 
@@ -16,7 +16,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
             FAIL_STAGE = ""
-            PIPELINE_NAME = env.JOB_NAME.split('/')[0]
+            PIPELINE_NAME = PIPELINE_ARRAY[0]
         }
 
         stages {
