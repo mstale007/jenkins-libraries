@@ -189,8 +189,10 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             always{
                 script{
                     jiraUtil.update(progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_new_bdd.com")
-                    jiraUtil.updateComment("Unix updated me!!")
+                    jiraUtil.updateComment("How you doing!!")
                     jiraUtil.updateCommentwithBDD()
+                    jiraUtil.updateCommentwithCommitterMention()
+
                 }
                 echo "JIRA: Added BDD test reports"
             }
