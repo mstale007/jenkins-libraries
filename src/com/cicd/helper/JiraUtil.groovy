@@ -159,7 +159,7 @@ def addAssignee(Map args =[text: "60dbed7c285656006a7a6927"]){
 }
 
 def getIssueID(){
-    String issueKey="CICD"
+    String issueKey = env.ISSUE_KEY 
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
     String commitMessage=""
