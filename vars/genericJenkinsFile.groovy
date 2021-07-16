@@ -15,6 +15,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             ISSUE_KEY = args.issueKey.toString()
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
+            FAIL_STAGE = ""
         }
 
         stages {
@@ -155,6 +156,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         issueID = jiraUtil.createIssue()
                         jiraUtil.addAssignee(issue: issueID)
                     }
+
+                    env.FAIL_STAGE = LAST_STAGE
 
                     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
                     if(env.UNIT_TEST_REPORT == true) {
