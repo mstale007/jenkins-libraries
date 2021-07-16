@@ -55,7 +55,7 @@ def addAssignee(){
     }   
 }
 
-@NonCPS
+
 def getAccountId(){
     String accountId = ""
     String response = ""
