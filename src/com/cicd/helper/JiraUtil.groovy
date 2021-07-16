@@ -29,8 +29,7 @@ def updateComment(Map args =[text: "", issue: ""]){
     if(!issueID.equals("")){
         echo "IssueId found: $issueID"
     }
-    else {
-        if(!args.issue.equals("")) {
+    else if(!args.issue.equals("")) {
             issue_ID = args.issue.toString()
         }
     }
