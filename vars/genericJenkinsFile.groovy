@@ -222,11 +222,11 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
                 }
                 echo "JIRA: Added BDD test reports"
             }
-            success {
-            }
-            failure {
+            // success {
+            // }
+            // failure {
 
-            }
+            // }
             //cleanup{} 
         }
     }
