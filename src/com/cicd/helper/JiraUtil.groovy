@@ -75,7 +75,7 @@ def updateCommentwithBDD(Map args = [filePath: "C:/", issue: ""]) {
     }
     
     comment+=table_seperator
-    updateComment("BDD Test Reports:\\n"+comment, issue_ID)
+    updateComment(text: "BDD Test Reports:\\n"+comment, issue: issue_ID)
 }
 
 @NonCPS
@@ -116,7 +116,7 @@ def xmlToComment(Map args = [path: "C:/", issue: ""]){
     String comment = getXML(path: args.path.toString())
     String issue_ID = args.issue.toString()
 
-    updateComment(text: "Junit Test Reports:\\n" + comment, issue_ID)
+    updateComment(text: "Junit Test Reports:\\n" + comment, issue: issue_ID)
 }
 
 def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
