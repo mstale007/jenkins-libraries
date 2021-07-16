@@ -188,7 +188,7 @@ String parseJsonForIssueId(response) {
 
 def createIssue(){
     String response =""
-    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + emv.LAST_STAGE + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
+    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + env.LAST_STAGE + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
     if(isUnix()){
         response  = sh(returnStdout: true,script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" -d \""+body+"\"")   
     }
