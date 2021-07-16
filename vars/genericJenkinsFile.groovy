@@ -1,21 +1,21 @@
 import com.cicd.helper.JiraUtil
 
-def call(Map args =[buildMode: "mvn", issueKey: ""]){
+def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
     def jiraUtil= new JiraUtil()
     def LAST_STAGE = ""
 
-    pipeline{
+    pipeline {
         agent any
 
         //options{}
 
         //parameters{}
 
-        environment{
+        environment {
             ISSUE_KEY = args.issueKey.toString()
         }
 
-        stages{
+        stages {
             stage("Initialize"){
                 steps{
                     echo "Stage: $env.STAGE_NAME"
@@ -81,12 +81,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
                             jiraUtil.xmlToComment(path: "C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/jobs/springboot-multibranch-pipeline/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml")                    
                         }
                     }
-                    success{
-                        echo "JIRA: Unit Tests Successful"
-                    }
-                    failure{
-                        echo "JIRA: Unit Tests Failed"
-                    }
                 }
             }
             stage('Run on localhost') {
@@ -148,7 +142,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]){
                     echo "Now creating.."
                     
                 }
-                echo "JIRA: Added BDD test reports"
             }
             success {
                 echo "Build success"
