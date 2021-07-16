@@ -152,6 +152,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 echo "Failure"
                 script {
                     env.FAIL_STAGE = LAST_STAGE
+                    echo env.FAIL_STAGE
                     
                     String issueID = jiraUtil.getIssueID().toString()
                     if(issueID.equals("")){
