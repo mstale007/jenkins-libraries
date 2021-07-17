@@ -24,7 +24,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
                     
-                    ehco env.POM_ARTIFACTID
+                    echo env.POM_ARTIFACTID
+                    echo POM_ARTIFACTID
                     script {
                         LAST_STAGE = env.STAGE_NAME
                     }
