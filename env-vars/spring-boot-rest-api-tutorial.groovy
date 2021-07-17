@@ -1,0 +1,1 @@
+env.JIRA_BOARD = "https://mstale-test.atlassian.net/rest/api/latest"

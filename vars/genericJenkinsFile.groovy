@@ -21,7 +21,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
         }
 
         stages {
-            stage("Initialize"){
+            stage("Initialize") {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
@@ -37,6 +37,11 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     failure{
                         echo "JIRA: Initialize Failed"
                     }
+                }
+            }
+            stage("Load Env Variables") {
+                steps {
+                    echo $JENKINS_HOME
                 }
             }
             stage("Build"){
