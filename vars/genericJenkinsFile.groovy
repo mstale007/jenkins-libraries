@@ -41,7 +41,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             }
             stage("Load Env Variables") {
                 steps {
-                    echo $JENKINS_HOME
+                    echo $env.JENKINS_HOME
                 }
             }
             stage("Build"){
