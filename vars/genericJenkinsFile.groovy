@@ -41,7 +41,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             }
             stage("Load Env Variables") {
                 steps {
-                    echo $env.JENKINS_HOME
+                    load "env-vars/${env.PROJECT_NAME}.groovy"
+                    echo env.JIRA_BOARD
                 }
             }
             stage("Build"){
