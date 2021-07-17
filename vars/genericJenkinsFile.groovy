@@ -25,7 +25,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo env.PROJECT_VERSION
+
                     script {
                         LAST_STAGE = env.STAGE_NAME
                     }
@@ -94,10 +94,10 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         LAST_STAGE = env.STAGE_NAME
 
                         if(isUnix()) {
-                            sh "java -jar target/$env.PROJECT_NAME-0.0.1-SNAPSHOT.jar &"
+                            sh "java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar &"
                         }
                         else {
-                            bat "START /B java -jar target/$env.PROJECT_NAME-0.0.1-SNAPSHOT.jar"
+                            bat "START /B java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar"
                         }
                     }
                 }
