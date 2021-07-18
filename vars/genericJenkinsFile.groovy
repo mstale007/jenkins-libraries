@@ -4,6 +4,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
     def jiraUtil= new JiraUtil()
     def LAST_STAGE = ""
     def PIPELINE_ARRAY = env.JOB_NAME.split('/')
+    
     pipeline {
         agent any
 
@@ -18,7 +19,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             FAIL_STAGE = ""
             PROJECT_NAME = readMavenPom().getArtifactId()
             PROJECT_VERSION = readMavenPom().getVersion()
-            PATH_TO_BUILD = "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
+            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
         stages {
@@ -26,7 +27,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
-                    echo env.PATH_TO_BUILD
+                    
                     script {
                         LAST_STAGE = env.STAGE_NAME
                     }
@@ -147,9 +148,9 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     String issueID = jiraUtil.getIssueID().toString()
                     if(!issueID.equals("")){
                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
-                        jiraUtil.xmlToComment(path: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
+                        jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
                         //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
-                        jiraUtil.sendAttachment(attachmentLink: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                        jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
                     }
                     else {
                         echo "No issue updated/ no new issue created"
@@ -168,7 +169,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
                     if(env.UNIT_TEST_REPORT == true) {
-                        jiraUtil.xmlToComment(path: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/junitResult.xml", issue: issueID)                    
+                        jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
                     }
                     else {
                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Unit tests were not performed due to failure at an earlier stage", issue: issueID)
@@ -176,7 +177,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     if(env.BDD_REPORT == true) {
                         //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
-                        jiraUtil.sendAttachment(attachmentLink: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                        jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
                     }
                     else {
                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: BDD tests were not performed due to failure at an earlier stage", issue: issueID)
