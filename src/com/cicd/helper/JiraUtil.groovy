@@ -9,10 +9,10 @@ def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLin
     String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
 
     if(isUnix()){
-        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request PUT \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"\" -H \"Authorization:" + env.AUTH_TOKEN + "\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+        bat(script: "curl -g --request PUT \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
 }
 
@@ -23,10 +23,10 @@ def updateComment(Map args =[text: "", issue: ""]){
     String body = '{\\"body\\": \\"'+args.text+'\\"}'
 
     if(isUnix()){
-        sh(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/comment\" -H \"Authorization:" + env.AUTH_TOKEN + "\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
+        bat(script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/comment\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
     }
 }
 
@@ -126,11 +126,11 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
 
     if(isUnix()) {
         sh(script: "zip " + link + ".zip " + link)
-        sh(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+        sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
     }
     else {
         bat(script: "powershell Compress-Archive " + link + " " + link + ".zip")
-        bat(script: "curl -s -i -X POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/attachments\" --header \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+        bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
     }
 }
 
@@ -141,10 +141,10 @@ def addAssignee(Map args = [issue: ""]){
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
     if(isUnix()){
-        sh(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" -H \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" -H \"Content-Type:application/json\" -d \""+body+"\"")
+        sh(script: "curl -g --request PUT \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/assignee\" -H \"Authorization:" + env.AUTH_TOKEN + "\" -H \"Content-Type:application/json\" -d \""+body+"\"")
     }
     else{
-        bat(script: "curl -g --request PUT \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/assignee\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+        bat(script: "curl -g --request PUT \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/assignee\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" --data-raw \""+body+"")
     }   
 }
 
@@ -162,7 +162,7 @@ def getAccountId(){
     
     if(isUnix()){
         String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
-        response = sh(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==  \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
+        response = sh(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
         String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
@@ -170,7 +170,7 @@ def getAccountId(){
         commitEmail=commitEmail.substring(commitEmail.indexOf("\n")+1).trim()
         commitEmail=commitEmail[1..-2]
         echo "commitEmail : $commitEmail"
-        response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/user/search?query="+commitEmail+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        response = bat(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
     }                  
     
@@ -190,10 +190,10 @@ def createIssue(Map args = [failStage: ""]){
     String response =""
     String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"Build #'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + args.failStage.toString() + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
     if(isUnix()){
-        response  = sh(returnStdout: true,script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" -d \""+body+"\"")   
+        response  = sh(returnStdout: true,script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" -d \""+body+"\"")   
     }
     else{
-        response  = bat(returnStdout: true,script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
+        response  = bat(returnStdout: true,script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
     }
     return parseJsonForIssueId(response) 

@@ -42,7 +42,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             stage("Load Env Variables") {
                 steps {
                     load "env-vars/env.groovy"
-                    echo env.JIRA_BOARD
                 }
             }
             stage("Build"){
