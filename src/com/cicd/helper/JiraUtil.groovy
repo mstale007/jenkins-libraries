@@ -30,6 +30,27 @@ def updateComment(Map args =[text: "www.google.com"]){
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"/comment\" --header \"Authorization: Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA==\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
 }
 
+def checkIssueExist(){
+     boolean issueExist
+     String response = ""
+     if(isUnix()){
+            response = sh(returnStdout: true, script: "curl --request GET \"https://mstale-test.atlassian.net/rest/api/3/issue/"+issue_ID+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+     }
+     else{
+            response = bat(returnStdout: true, script: "curl --request GET \"https://mstale-test.atlassian.net/rest/api/3/issue/"+issue_ID+" \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+            response = response.substring(response.indexOf("\n")+1).trim()
+     }
+    response = response.substring(19,39)
+    if(response.equals("Issue does not exist")){
+            issueExist = false
+    }
+    else{
+            issueExist = true
+    }
+        
+    return issueExist;
+}
+
 def accountTest(){
     String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'").trim()
     echo "Email: $commitEmail"
@@ -79,7 +100,7 @@ def getAccountId(){
     return accountId; 
 }
 
-@NonCPS
+
 def createIssue(){
     def jsonSlurper = new JsonSlurperClassic()
     String issueKey = ""
