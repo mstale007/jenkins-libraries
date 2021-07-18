@@ -18,6 +18,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             FAIL_STAGE = ""
             PROJECT_NAME = readMavenPom().getArtifactId()
             PROJECT_VERSION = readMavenPom().getVersion()
+            PATH_TO_BUILD = "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
         stages {
@@ -25,7 +26,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 steps{
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
-
+                    echo env.PATH_TO_BUILD
                     script {
                         LAST_STAGE = env.STAGE_NAME
                     }
