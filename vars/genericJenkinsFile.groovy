@@ -151,7 +151,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     }
                     echo "Close artificat version..!"
                     //Forcefully trying to give error
-                    bat "abcd"
+                    //bat "abcd"
                 }
                 post{
                     success{
@@ -234,6 +234,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     jiraUtil.updateComment("How you doing!!")
                     jiraUtil.updateCommentwithBDD()
                     jiraUtil.updateCommentwithCommitterMention()
+                    jiraUtil.updateCommentwithTimestamp()
 
                 }
                 echo "JIRA: Added BDD test reports"

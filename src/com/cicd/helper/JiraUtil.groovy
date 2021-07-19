@@ -97,7 +97,7 @@ def updateCommentwithCommitterMention(){
 def updateCommentwithTimestamp(){
     String date= new Date()
     echo "Committed on: $date"
-    //updateComment("Committed on: $date")
+    updateComment("Committed on: $date")
 }
 
 def getAccountId(){
