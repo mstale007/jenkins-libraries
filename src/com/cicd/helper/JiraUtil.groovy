@@ -2,6 +2,89 @@ package com.cicd.helper
 
 import groovy.json.JsonSlurperClassic
 
+def updateJirawithFailure(args){
+    String issueID = jiraUtil.getIssueID().toString()
+    
+    if(issueID.equals("")){
+        issueID = createIssue(failStage: args.failStage)
+        addAssignee(issue: issueID)
+    }
+    String commentBody="{panel:bgColor=#ffebe6}\\nBuild Failed at stage: $args.failStage\\n{panel}\\n"
+
+    if(env.UNIT_TEST_REPORT){
+        //XML reports
+        commentBody+="{panel:bgColor=#fffae6}\\nJunit Test Reports:\\n{panel}\\n"
+        commentBody+=getXML()
+    }
+    else{
+        commentBody+="{panel:bgColor==#fffae6}\\nUnit tests were not performed due to failure at an earlier stage\\n{panel}\\n"
+    }
+    
+    if(env.BDD_REPORT){
+        //BDD Reports
+        commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
+        commentBody+=getBDD()
+        //jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+    }
+    else{
+       commentBody+="{panel:bgColor=#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
+    }
+
+    //Build Signature
+    commentBody+=getBuildSignature()
+    echo "Comment: $commentBody"
+    updateComment(text: commentBody,issue:issueID)
+}
+
+def updateJirawithSuccess(){
+    String issueID = jiraUtil.getIssueID().toString()
+    if(issueID.equals("")){
+        echo "[JiraUtil] No issue updated/ no new issue created"
+        return
+    }
+    String commentBody="Build Successful\\n"
+
+    //XML reports
+    commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
+    commentBody+=getXML()
+    
+    //BDD Reports
+    commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
+    commentBody+=getBDD()
+    //jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+
+    //Build Signature
+    commentBody+=getBuildSignature()
+
+    echo "Comment: $commentBody"
+    updateComment(text: commentBody,issue: issueID)
+}
+
+def getBuildSignature(){
+    String buildSign=""
+    //Build URL
+    if(env.BUILD_URL){
+        buildSign="Build URL: [+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
+    }
+    else{
+        buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
+        echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
+    }
+    //AccountID
+    String accountId= getAccountId()[0].toString()
+    String commitEmail= getAccountId()[1].toString()
+    if(accountID!=""){
+        buildSign+="Committed by: [~accountid:$accountId]\\n"
+    }
+    else{
+        buildSign+="Committed by: $commitEmail\\n"
+    }
+    //Timestamp
+    String date= new Date()
+    buildSign+="Committed on: $date\\n")
+    return buildSign
+}
+
 def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com", issue: ""]){
     
     String issue_ID = args.issue.toString()
@@ -38,9 +121,9 @@ def getJSON(response){
     return cfg
 }
 
-def updateCommentwithBDD(Map args = [filePath: "C:/", issue: ""]) {
+def getBDD(Map args = [filePath: "$JENKINS_HOME/jobs/${env.PROJECT_NAME}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: ""]) {
 
-    String issue_ID = args.issue.toString()
+    String issueID = args.issue.toString()
     filename = args.filePath.toString()
 
     if(isUnix()){
@@ -75,11 +158,18 @@ def updateCommentwithBDD(Map args = [filePath: "C:/", issue: ""]) {
     }
     
     comment+=table_seperator
-    updateComment(text: "BDD Test Report for build #$env.BUILD_NUMBER:\\n"+comment, issue: issue_ID)
+    comment+="\\n"
+    return comment
+    //updateComment(text: "BDD Test Report for build #$env.BUILD_NUMBER:\\n"+comment, issue: issueID)
+}
+
+def BDDtoComment(args){
+    String comment=getBDD()
+    updateComment(text: comment,issue: args.issueID)
 }
 
 @NonCPS
-String getXML(Map args = [path: ""]) {
+String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
     String xmlPath = args.path.toString()
 
     def xml = new XmlSlurper().parse(xmlPath) 
@@ -109,6 +199,8 @@ String getXML(Map args = [path: ""]) {
 
     } 
     comment += table_seperator
+    comment += "\\n"
+    return comment 
 }
 
 def xmlToComment(Map args = [path: "C:/", issue: ""]){
@@ -137,7 +229,8 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
 def addAssignee(Map args = [issue: ""]){
 
     String issue_ID = args.issue.toString()
-    String accountId = getAccountId().toString()
+    String accountId = getAccountId()[0].toString()
+
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
     if(isUnix()){
@@ -150,12 +243,19 @@ def addAssignee(Map args = [issue: ""]){
 
 @NonCPS
 String getAccountIdParser(response) {
-    def jsonSlurper = new JsonSlurperClassic()
-    parse = jsonSlurper.parseText(response)
-    accountId = parse.accountId[0]
-    return accountId; 
+    if(response.length!=0){
+        def jsonSlurper = new JsonSlurperClassic()
+        parse = jsonSlurper.parseText(response)
+        accountId = parse.accountId[0]
+        return accountId; 
+    }
+    else{
+        return ""
+    }
 }
 
+
+//Return Jira acountID from commitEmail, if no accountID exists return commitEmail
 def getAccountId(){
     String accountId = ""
     String response = ""
@@ -172,9 +272,9 @@ def getAccountId(){
         echo "commitEmail : $commitEmail"
         response = bat(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
-    }                  
-    
-    return getAccountIdParser(response)
+    }
+    response = getAccountIdParser(response)
+    return [response,commitEmail]
 }
 
 @NonCPS
