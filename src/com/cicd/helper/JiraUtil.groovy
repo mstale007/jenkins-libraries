@@ -51,6 +51,17 @@ def checkIssueExist(){
     return issueExist;
 }
 
+def test1(){
+        String response = "Hello"
+        String email = "test@test.com"
+        return [response,email]
+}
+
+def test2(){
+        def res = test1()
+        println(res)
+}
+
 def accountTest(){
     String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'").trim()
     echo "Email: $commitEmail"
