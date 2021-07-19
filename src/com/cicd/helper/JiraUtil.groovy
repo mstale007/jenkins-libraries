@@ -94,6 +94,12 @@ def updateCommentwithCommitterMention(){
     updateComment("Committed by: [~accountid:$accountId]")
 }
 
+def updateCommentwithTimestamp(){
+    String date= new Date()
+    echo "Committed on: $date"
+    //updateComment("Committed on: $date")
+}
+
 def getAccountId(){
     String accountId = ""
     String response = ""
