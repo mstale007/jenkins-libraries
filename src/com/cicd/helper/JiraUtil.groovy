@@ -89,15 +89,14 @@ def updateCommentwithFailMessage(stageName){
     updateComment("{panel:bgColor=#ffebe6}\\nBuild Failed at stage: $stageName\\n{panel}\\n")
 }
 
-def updateCommentwithCommitterMention(){
+def updateCommentwithCommitterMentionTimestamp(){
     String accountId=getAccountId()
-    updateComment("Committed by: [~accountid:$accountId]")
+    String date= new Date()
+    updateComment("Committed by: [~accountid:$accountId]\\nCommitted on: $date")
 }
 
-def updateCommentwithTimestamp(){
-    String date= new Date()
-    echo "Committed on: $date"
-    updateComment("Committed on: $date")
+def updateCommentwithBuildURL(){
+    updateComment("Build URL: [+#$env.BUILD_NUMBER+|$env.BUILD_URL]")
 }
 
 def getAccountId(){
