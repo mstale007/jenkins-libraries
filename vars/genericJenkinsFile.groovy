@@ -4,7 +4,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
     def jiraUtil= new JiraUtil()
     def LAST_STAGE = ""
     def PIPELINE_ARRAY = env.JOB_NAME.split('/')
-    
+
     pipeline {
         agent any
 
@@ -176,7 +176,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     }
 
                     if(env.BDD_REPORT == true) {
-                        //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
+                        jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
                         jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
                     }
                     else {
