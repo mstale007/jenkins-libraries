@@ -191,6 +191,7 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     jiraUtil.updateComment(text: "Build Failed")
                     jiraUtil.getAccountId()
                     jiraUtil.addAssignee()
+                    jiraUtil.test2()
                 }
                 echo "JIRA: Added BDD test reports"
             }
