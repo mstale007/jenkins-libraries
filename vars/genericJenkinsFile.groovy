@@ -53,12 +53,12 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     script {
                         LAST_STAGE = env.STAGE_NAME
                         
-                        // if(isUnix()) {
-                        //     sh "mvn clean install -DskipTests"
-                        // }
-                        // else {
-                        //     bat "mvn clean install -DskipTests"
-                        // }
+                        if(isUnix()) {
+                            sh "mvn clean install -DskipTests"
+                        }
+                        else {
+                            bat "mvn clean install -DskipTests"
+                        }
                     }
                 }
                 post{
@@ -78,19 +78,18 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         LAST_STAGE = env.STAGE_NAME
                         env.UNIT_TEST_REPORT = true
 
-                        // if(isUnix()) {
-                        //     sh "mvn -Dtest=UnitTests test jacoco:report"
-                        // }
-                        // else {
-                        //     bat "mvn -Dtest=UnitTests test jacoco:report"
-                        // }
+                        if(isUnix()) {
+                            sh "mvn -Dtest=UnitTests test jacoco:report"
+                        }
+                        else {
+                            bat "mvn -Dtest=UnitTests test jacoco:report"
+                        }
                     }
                 }
                 post{
                     always {
-                        echo "No Tests.. Just go"
-                        // junit '**/target/surefire-reports/*.xml'
-                        // jacoco()
+                        junit '**/target/surefire-reports/*.xml'
+                        jacoco()
                     }
                 }
             }
@@ -101,12 +100,12 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     script {
                         LAST_STAGE = env.STAGE_NAME
 
-                        // if(isUnix()) {
-                        //     sh "java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar &"
-                        // }
-                        // else {
-                        //     bat "START /B java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar"
-                        // }
+                        if(isUnix()) {
+                            sh "java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar &"
+                        }
+                        else {
+                            bat "START /B java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar"
+                        }
                     }
                 }
             }
@@ -118,27 +117,26 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         LAST_STAGE = env.STAGE_NAME
                         env.BDD_REPORT = true
 
-                        // if(isUnix()) {
-                        //     sh "mvn -Dtest=TestRunner test"
-                        // }
-                        // else {
-                        //     bat "mvn -Dtest=TestRunner test"
-                        // }
+                        if(isUnix()) {
+                            sh "mvn -Dtest=TestRunner test"
+                        }
+                        else {
+                            bat "mvn -Dtest=TestRunner test"
+                        }
                     } 
                 }
                 post{
                     always {
-                        echo "No Tests.. Just go"
-                        // cucumber buildStatus: 'UNSTABLE',
-                        //     reportTitle: 'My report',
-                        //     fileIncludePattern: '**/*.json',
-                        //     trendsLimit: 10,
-                        //     classifications: [
-                        //         [
-                        //             'key': 'Browser',
-                        //             'value': 'Firefox'
-                        //         ]
-                        //     ]
+                        cucumber buildStatus: 'UNSTABLE',
+                            reportTitle: 'My report',
+                            fileIncludePattern: '**/*.json',
+                            trendsLimit: 10,
+                            classifications: [
+                                [
+                                    'key': 'Browser',
+                                    'value': 'Firefox'
+                                ]
+                            ]
                     }
                 }
             }
