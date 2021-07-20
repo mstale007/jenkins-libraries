@@ -259,13 +259,14 @@ String getAccountIdParser(response) {
 def getAccountId(){
     String accountId = ""
     String response = ""
+    String commitEmail = ""
     
     if(isUnix()){
-        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
         response = sh(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
-        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
         commitEmail=commitEmail.substring(commitEmail.indexOf(">")+1).trim()
         commitEmail=commitEmail.substring(commitEmail.indexOf("\n")+1).trim()
         commitEmail=commitEmail[1..-2]
