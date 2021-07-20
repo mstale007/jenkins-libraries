@@ -23,7 +23,7 @@ def updateJirawithFailure(args){
     if(env.BDD_REPORT){
         //BDD Reports
         commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
-        //commentBody+=getBDD()
+        commentBody+=getBDD()
         sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
     }
     else{
@@ -133,8 +133,6 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     }
 
     String comment=table_seperator
-    int count = 0
-    //def display = ["buildNumbers", "totalFeatures", "failedFeatures", "totalScenarios", "failedScenarios"]
     for(element in cucumber_json){
             comment+=table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
 
