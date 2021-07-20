@@ -1,7 +1,7 @@
 import com.cicd.helper.JiraUtil
 
 def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
-    def jiraUtil= new JiraUtil()
+    def jiraUtil = new JiraUtil()
     def LAST_STAGE = ""
 
     pipeline {
