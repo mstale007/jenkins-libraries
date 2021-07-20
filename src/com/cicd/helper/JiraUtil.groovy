@@ -123,7 +123,7 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     }
 
     def cucumber_json=getJSON(response)
-    echo cucumber_json
+    //echo cucumber_json
     String table_seperator=""
     if(isUnix()){
         table_seperator="|"
