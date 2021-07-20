@@ -88,6 +88,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 }
                 post{
                     always {
+                        echo "No Tests.. Just go"
                         // junit '**/target/surefire-reports/*.xml'
                         // jacoco()
                     }
@@ -127,6 +128,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 }
                 post{
                     always {
+                        echo "No Tests.. Just go"
                         // cucumber buildStatus: 'UNSTABLE',
                         //     reportTitle: 'My report',
                         //     fileIncludePattern: '**/*.json',
