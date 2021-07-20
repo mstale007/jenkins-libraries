@@ -126,10 +126,10 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     echo cucumber_json
     String table_seperator=""
     if(isUnix()){
-        table_seperator="^|"
+        table_seperator="|"
     }
     else{
-        table_seperator="|"
+        table_seperator="^|"
     }
 
     String comment=table_seperator
