@@ -147,7 +147,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 script {
                     // String issueID = jiraUtil.getIssueID().toString()
                     // if(!issueID.equals("")){
-                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
+                         jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
                     //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
                     //     //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
                     //     jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
@@ -155,7 +155,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     // else {
                     //     echo "No issue updated/ no new issue created"
                     // }
-                    jiraUtil.updateJirawithSuccess()
+                    //jiraUtil.updateJirawithSuccess()
                 }
             }
             failure {
@@ -168,7 +168,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     //     jiraUtil.addAssignee(issue: issueID)
                     // }
 
-                    // jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
+                     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
                     // if(env.UNIT_TEST_REPORT == true) {
                     //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
                     // }
@@ -183,7 +183,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     // else {
                     //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: BDD tests were not performed due to failure at an earlier stage", issue: issueID)
                     // }
-                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE)
+                    //jiraUtil.updateJirawithFailure(failStage: LAST_STAGE)
                 }
             }
             //cleanup{} 
