@@ -42,7 +42,7 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="Build [+#$env.BUILD_NUMBER+|${env.BUILD_URL}] Successful\\n"
+    String commentBody="Build Successful\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
@@ -54,7 +54,7 @@ def updateJirawithSuccess(){
     sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
-    //commentBody+=getBuildSignature()
+    commentBody+=getBuildSignature()
 
     echo "Comment: $commentBody"
     updateComment(text: commentBody,issue: issueID)
