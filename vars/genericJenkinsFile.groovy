@@ -16,6 +16,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             ISSUE_KEY = args.issueKey.toString()
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
+            PROJECT_NAME= env.JOB_NAME.split('/')[0]
             FAIL_STAGE = ""
             PROJECT_NAME = readMavenPom().getArtifactId()
             PROJECT_VERSION = readMavenPom().getVersion()
@@ -145,43 +146,45 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    String issueID = jiraUtil.getIssueID().toString()
-                    if(!issueID.equals("")){
-                        jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
-                        jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
-                        //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME\\jobs\\${PIPELINE_ARRAY[0]}\\branches\\${env.BRANCH_NAME}\\cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4\\cucumber-trends.json", issue: issueID)
-                        jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
-                    }
-                    else {
-                        echo "No issue updated/ no new issue created"
-                    }
+                    // String issueID = jiraUtil.getIssueID().toString()
+                    // if(!issueID.equals("")){
+                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
+                    //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
+                    //     //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
+                    //     jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                    // }
+                    // else {
+                    //     echo "No issue updated/ no new issue created"
+                    // }
+                    jiraUtil.updateJirawithSuccess()
                 }
             }
             failure {
                 echo "Failure"
                 script {
 
-                    String issueID = jiraUtil.getIssueID().toString()
-                    if(issueID.equals("")){
-                        issueID = jiraUtil.createIssue(failStage: LAST_STAGE)
-                        jiraUtil.addAssignee(issue: issueID)
-                    }
+                    // String issueID = jiraUtil.getIssueID().toString()
+                    // if(issueID.equals("")){
+                    //     issueID = jiraUtil.createIssue(failStage: LAST_STAGE)
+                    //     jiraUtil.addAssignee(issue: issueID)
+                    // }
 
-                    jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
-                    if(env.UNIT_TEST_REPORT == true) {
-                        jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
-                    }
-                    else {
-                        jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Unit tests were not performed due to failure at an earlier stage", issue: issueID)
-                    }
+                    // jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
+                    // if(env.UNIT_TEST_REPORT == true) {
+                    //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
+                    // }
+                    // else {
+                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Unit tests were not performed due to failure at an earlier stage", issue: issueID)
+                    // }
 
-                    if(env.BDD_REPORT == true) {
-                        //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME\\jobs\\${PIPELINE_ARRAY[0]}\\branches\\${env.BRANCH_NAME}\\cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4\\cucumber-trends.json", issue: issueID)
-                        jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
-                    }
-                    else {
-                        jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: BDD tests were not performed due to failure at an earlier stage", issue: issueID)
-                    }
+                    // if(env.BDD_REPORT == true) {
+                    //     //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
+                    //     jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+                    // }
+                    // else {
+                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: BDD tests were not performed due to failure at an earlier stage", issue: issueID)
+                    // }
+                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE)
                 }
             }
             //cleanup{} 
