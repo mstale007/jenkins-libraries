@@ -42,7 +42,7 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="Build [+#$env.BUILD_NUMBER+|$env.BUILD_URL] Successful\\n"
+    String commentBody="Build [+#$env.BUILD_NUMBER+|${env.BUILD_URL}] Successful\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
