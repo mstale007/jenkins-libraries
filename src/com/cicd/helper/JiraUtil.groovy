@@ -51,20 +51,18 @@ def checkIssueExist(){
     return issueExist;
 }
 
-def test1(){
-        String response = "Hello"
-        String email = "test@test.com"
-        return [response,email]
-}
-
-def test2(){
-        def res = test1()
-        println(res)
-}
-
-def accountTest(){
-    String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%ae'").trim()
-    echo "Email: $commitEmail"
+def issueStatus(){
+    String status = ""
+    String response = ""
+    response = bat(returnStdout: true,script:"curl --request GET \"https://mstale-test.atlassian.net/rest/api/latest/issue/"+issue_ID+"?fields=status \" -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+    response = response.substring(response.indexOf("\n")+1).trim()
+    def jsonSlurper = new JsonSlurperClassic()
+    parse = jsonSlurper.parseText(response)
+    status = parse.fields.status.name
+    println(status)
+    if(status.equals("Done")){
+    String body ='{\\"transition\\": {\\"id\\": \\"21\\"}}'
+    bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/3/issue/"+issue_ID+"/transitions \"  -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" --data-raw \""+body+"")
 }
                        
 def addAssignee(){
