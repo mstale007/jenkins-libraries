@@ -81,7 +81,7 @@ def getBuildSignature(){
     }
     //Timestamp
     String date= new Date()
-    buildSign+="Committed on: $date\\n")
+    buildSign+="Committed on: $date\\n"
     return buildSign
 }
 
