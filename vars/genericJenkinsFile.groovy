@@ -145,7 +145,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    // String issueID = jiraUtil.getIssueID().toString()
+                    String issueID = jiraUtil.getIssueID().toString()
                     // if(!issueID.equals("")){
                          jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
                     //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
@@ -162,7 +162,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 echo "Failure"
                 script {
 
-                    // String issueID = jiraUtil.getIssueID().toString()
+                    String issueID = jiraUtil.getIssueID().toString()
                     // if(issueID.equals("")){
                     //     issueID = jiraUtil.createIssue(failStage: LAST_STAGE)
                     //     jiraUtil.addAssignee(issue: issueID)
