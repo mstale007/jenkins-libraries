@@ -8,7 +8,7 @@ def updateJirawithFailure(args){
     if(issueID.equals("")){
         issueID = createIssue(failStage: args.failStage)
         echo issueID
-        addAssignee(issue: issueID)
+        //addAssignee(issue: issueID)
     }
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
 
