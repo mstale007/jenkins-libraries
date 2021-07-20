@@ -131,38 +131,32 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME/jobs/${env.PROJECT_NAME}/branche
 
     String issueID = args.issue.toString()
     filename = args.filePath.toString()
-
     if(isUnix()){
         response=sh(script:"cat $filename",returnStdout: true).trim()
     }
     else{
         response=bat(script:"type $filename",returnStdout: true).trim()
-        echo response
         response=response.substring(response.indexOf("\n")+1).trim()
-        echo response
     }
 
     def cucumber_json=getJSON(response)
-    
+
     String table_seperator=""
     if(isUnix()){
-        table_seperator="^|"
+        table_seperator="|"
     }
     else{
-        table_seperator="|"
+        table_seperator="^|"
     }
 
     String comment=table_seperator
     for(element in cucumber_json){
-        comment += table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
-
-        for(e in element.value) {
-            comment+=table_seperator+e.toString().trim()
-        }
-        
-        comment+=table_seperator+"\\n"
+        comment+=table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
     }
-    
+    comment+=table_seperator+"\\n"
+    for(element in cucumber_json){
+        comment+=table_seperator+element.value[-1].toString().trim()
+    }
     comment+=table_seperator
     comment+="\\n"
     return comment
