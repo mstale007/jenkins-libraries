@@ -50,7 +50,7 @@ def updateJirawithSuccess(){
     
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
-    //commentBody+=getBDD()
+    commentBody+=getBDD()
     sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
@@ -83,20 +83,6 @@ def getBuildSignature(){
     String date= new Date()
     buildSign+="Committed on: $date\\n"
     return buildSign
-}
-
-def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com", issue: ""]){
-    
-    String issue_ID = args.issue.toString()
-
-    String body = '{\\"fields\\": {\\"customfield_10034\\":[\\"'+args.progressLabel+'\\"],\\"customfield_10035\\":\\"'+args.bddReport+'\\",\\"customfield_10036\\":\\"'+args.reportLink+'\\"}}'
-
-    if(isUnix()){
-        sh(script: "curl -g --request PUT \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"\" -H \"Authorization:" + env.AUTH_TOKEN + "\" -H \"Content-Type:application/json\" -d \""+body+"\"")
-    }
-    else{
-        bat(script: "curl -g --request PUT \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" --data-raw \""+body+"\"")
-    }
 }
 
 def updateComment(Map args =[text: "", issue: ""]){
@@ -155,8 +141,8 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
         comment+=table_seperator+"\\n"
     }
     
-    comment+=table_seperator
-    comment+="\\n"
+    // comment+=table_seperator
+    // comment+="\\n"
     return comment
     //updateComment(text: "BDD Test Report for build #$env.BUILD_NUMBER:\\n"+comment, issue: issueID)
 }
