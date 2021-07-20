@@ -4,7 +4,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
     def jiraUtil= new JiraUtil()
     def LAST_STAGE = ""
     def PIPELINE_ARRAY = env.JOB_NAME.split('/')
-    def PN = PIPELINE_ARRAY[0]
+    String PN = PIPELINE_ARRAY[0]
 
     pipeline {
         agent any
