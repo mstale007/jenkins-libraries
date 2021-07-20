@@ -9,7 +9,7 @@ def updateJirawithFailure(args){
         issueID = createIssue(failStage: args.failStage)
         addAssignee(issue: issueID)
     }
-    String commentBody="{panel:bgColor=#ffebe6}\\nBuild Failed at stage: $args.failStage\\n{panel}\\n"
+    String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
 
     if(env.UNIT_TEST_REPORT){
         //XML reports
@@ -42,7 +42,7 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="Build Successful\\n"
+    String commentBody="Build #${env.BUILD_NUMBER} Successful\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
@@ -50,7 +50,7 @@ def updateJirawithSuccess(){
     
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
-    //commentBody+=getBDD()
+    commentBody+=getBDD()
     sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
@@ -150,10 +150,7 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     for(element in cucumber_json){
         comment += table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
 
-        for(e in element.value) {
-            comment+=table_seperator+e.toString().trim()
-        }
-        
+        comment+=table_seperator+element.value[-1].toString().trim()        
         comment+=table_seperator+"\\n"
     }
     
