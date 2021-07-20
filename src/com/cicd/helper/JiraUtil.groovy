@@ -118,13 +118,12 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     }
     else{
         response=bat(script:"type $filename",returnStdout: true).trim()
-        echo response
         response=response.substring(response.indexOf("\n")+1).trim()
         echo response
     }
 
     def cucumber_json=getJSON(response)
-    
+    echo cucumber_json
     String table_seperator=""
     if(isUnix()){
         table_seperator="^|"
