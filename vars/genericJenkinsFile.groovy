@@ -4,6 +4,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
     def jiraUtil= new JiraUtil()
     def LAST_STAGE = ""
     def PIPELINE_ARRAY = env.JOB_NAME.split('/')
+    def PN = PIPELINE_ARRAY[0]
 
     pipeline {
         agent any
@@ -17,7 +18,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
             FAIL_STAGE = ""
-            PIPELINE_NAME += PIPELINE_ARRAY[0]
+            PIPELINE_NAME = PN
             PROJECT_NAME = readMavenPom().getArtifactId()
             PROJECT_VERSION = readMavenPom().getVersion()
             BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
