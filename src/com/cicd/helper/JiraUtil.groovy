@@ -138,9 +138,9 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
         comment+=table_seperator+"*"+element.key.toString().trim()+"*"+table_seperator
     }
     comment+=table_seperator+"\\n"
-    for(element in cucumber_json){
-        comment+=table_seperator+element.value[-1].toString().trim()
-    }
+    // for(element in cucumber_json){
+    //     comment+=table_seperator+element.value[-1].toString().trim()
+    // }
     comment+=table_seperator
     
     // comment+=table_seperator
