@@ -246,7 +246,7 @@ String getAccountIdParser(response) {
     if(!response.equals("")){
         def jsonSlurper = new JsonSlurperClassic()
         parse = jsonSlurper.parseText(response)
-        accountId = parse.accountId[0]
+        String accountId = parse.accountId[0]
         return accountId; 
     }
     else{
