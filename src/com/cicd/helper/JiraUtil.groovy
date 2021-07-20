@@ -63,6 +63,7 @@ def issueStatus(){
     if(status.equals("Done")){
     String body ='{\\"transition\\": {\\"id\\": \\"21\\"}}'
     bat(script: "curl -g --request POST \"https://mstale-test.atlassian.net/rest/api/3/issue/"+issue_ID+"/transitions \"  -H \"Authorization:Basic bXN0YWxlMjBAZ21haWwuY29tOkhKbFRSQ1B3YmRHMnhabVBIbnhPQUEyRA== \" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+    }
 }
                        
 def addAssignee(){
