@@ -42,7 +42,7 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="Build Successful\\n"
+    String commentBody="Build [+#$env.BUILD_NUMBER+|$env.BUILD_URL] Successful\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
@@ -63,13 +63,13 @@ def updateJirawithSuccess(){
 def getBuildSignature(){
     String buildSign=""
     //Build URL
-    if(env.BUILD_URL){
-        buildSign="Build URL: [+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
-    }
-    else{
-        buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
-        echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
-    }
+    // if(env.BUILD_URL){
+    //     buildSign="Build URL: [+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
+    // }
+    // else{
+    //     buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
+    //     echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
+    // }
     //AccountID
     String accountId= getAccountId()[0].toString()
     String commitEmail= getAccountId()[1].toString()
