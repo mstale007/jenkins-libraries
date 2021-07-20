@@ -3,7 +3,7 @@ package com.cicd.helper
 import groovy.json.JsonSlurperClassic
 
 def updateJirawithFailure(args){
-    String issueID = jiraUtil.getIssueID().toString()
+    String issueID = getIssueID().toString()
     
     if(issueID.equals("")){
         issueID = createIssue(failStage: args.failStage)
@@ -37,7 +37,7 @@ def updateJirawithFailure(args){
 }
 
 def updateJirawithSuccess(){
-    String issueID = jiraUtil.getIssueID().toString()
+    String issueID = getIssueID().toString()
     if(issueID.equals("")){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
