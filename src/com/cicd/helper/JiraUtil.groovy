@@ -64,7 +64,7 @@ def getBuildSignature(){
     String buildSign=""
     //Build URL
     if(env.BUILD_URL){
-        buildSign="Build URL: [+#$env.BUILD_NUMBER+|\"$env.BUILD_URL\"]\\n"
+        buildSign="Build URL: [+#$env.BUILD_NUMBER+|\\"$env.BUILD_URL\\"]\\n"
     }
     else{
         buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
