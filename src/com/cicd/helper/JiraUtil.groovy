@@ -45,12 +45,12 @@ def updateJirawithSuccess(){
     String commentBody="Build Successful\\n"
 
     //XML reports
-    commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
-    commentBody+=getXML()
+    // commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
+    // commentBody+=getXML()
     
-    //BDD Reports
-    commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
-    commentBody+=getBDD()
+    // //BDD Reports
+    // commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
+    // commentBody+=getBDD()
     //jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
@@ -81,7 +81,7 @@ def getBuildSignature(){
     }
     //Timestamp
     String date= new Date()
-    buildSign+="Committed on: $date\\n")
+    buildSign+="Committed on: $date\\n"
     return buildSign
 }
 
