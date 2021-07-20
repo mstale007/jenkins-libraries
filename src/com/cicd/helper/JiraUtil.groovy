@@ -3,7 +3,7 @@ package com.cicd.helper
 import groovy.json.JsonSlurperClassic
 
 def updateJirawithFailure(args){
-    String issueID = jiraUtil.getIssueID().toString()
+    String issueID = getIssueID().toString()
     
     if(issueID.equals("")){
         issueID = createIssue(failStage: args.failStage)
@@ -24,7 +24,7 @@ def updateJirawithFailure(args){
         //BDD Reports
         commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         commentBody+=getBDD()
-        //jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+        //sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
     }
     else{
        commentBody+="{panel:bgColor=#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -37,7 +37,7 @@ def updateJirawithFailure(args){
 }
 
 def updateJirawithSuccess(){
-    String issueID = jiraUtil.getIssueID().toString()
+    String issueID = getIssueID().toString()
     if(issueID.equals("")){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
@@ -51,7 +51,7 @@ def updateJirawithSuccess(){
     // //BDD Reports
     // commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     // commentBody+=getBDD()
-    //jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+    //sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
     commentBody+=getBuildSignature()
