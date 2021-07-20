@@ -18,10 +18,10 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             UNIT_TEST_REPORT = false
             BDD_REPORT = false
             FAIL_STAGE = ""
-            PIPELINE_NAME = PN
+            PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
             PROJECT_NAME = readMavenPom().getArtifactId()
             PROJECT_VERSION = readMavenPom().getVersion()
-            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
+            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
         stages {
