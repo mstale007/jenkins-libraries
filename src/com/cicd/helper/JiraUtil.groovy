@@ -243,7 +243,7 @@ def addAssignee(Map args = [issue: ""]){
 
 @NonCPS
 String getAccountIdParser(response) {
-    if(response.length!=0){
+    if(!response.equals("")){
         def jsonSlurper = new JsonSlurperClassic()
         parse = jsonSlurper.parseText(response)
         accountId = parse.accountId[0]
