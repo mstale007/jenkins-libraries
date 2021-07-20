@@ -102,9 +102,9 @@ def updateComment(Map args =[text: "", issue: ""]){
 
 @NonCPS
 def getJSON(response){
-    def jsonSlurper = new JsonSlurper()
+    def jsonSlurper = new JsonSlurperClassic()
     def cfg = jsonSlurper.parseText(response)
-    jsonSlurper=null
+    //jsonSlurper=null
     return cfg
 }
 
