@@ -54,7 +54,7 @@ def updateJirawithSuccess(){
     sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
-    commentBody+=getBuildSignature()
+    //commentBody+=getBuildSignature()
 
     echo "Comment: $commentBody"
     updateComment(text: commentBody,issue: issueID)
