@@ -8,7 +8,7 @@ def updateJirawithFailure(args){
     if(issueID.equals("")){
         issueID = createIssue(failStage: args.failStage)
         echo issueID
-        //addAssignee(issue: issueID)
+        addAssignee(issue: issueID)
     }
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
 
@@ -73,8 +73,8 @@ def getBuildSignature(){
     //     echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
     // }
     //AccountID
-    String accountId= getAccountId()[0].toString()
-    String commitEmail= getAccountId()[1].toString()
+    String accountId= getAccountId().toString()
+    //String commitEmail= getAccountId()[1].toString()
     if(accountID!=""){
         buildSign+="Committed by: [~accountid:$accountId]\\n"
     }
@@ -212,7 +212,7 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
 def addAssignee(Map args = [issue: ""]){
 
     String issue_ID = args.issue.toString()
-    String accountId = getAccountId()[0].toString()
+    String accountId = getAccountId().toString()
 
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
@@ -257,7 +257,7 @@ def getAccountId(){
         response = response.substring(response.indexOf("\n")+1).trim()
     }
     response = getAccountIdParser(response)
-    return [response,commitEmail]
+    return response
 }
 
 @NonCPS
