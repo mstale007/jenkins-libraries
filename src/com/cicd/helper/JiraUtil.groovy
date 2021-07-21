@@ -10,7 +10,9 @@ def updateJirawithFailure(args){
         echo issueID
         addAssignee(issue: issueID)
     }
-    String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
+
+    String buildNumberWithLink=getBuildNumberWithLink()
+    String commentBody="{panel:bgColor=#ffebe6}\\nBuild $buildNumberWithLink Failed at stage: $args.failStage\\n{panel}\\n"
  
     if(args.unitTestReport == true){
         //XML reports
@@ -53,7 +55,8 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="{panel:bgColor=#e3fcef}\\nBuild #${env.BUILD_NUMBER} Successful\\n{panel}\\n"
+    String buildNumberWithLink=getBuildNumberWithLink()
+    String commentBody="{panel:bgColor=#e3fcef}\\nBuild $buildNumberWithLink Successful\\n{panel}\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
@@ -70,17 +73,27 @@ def updateJirawithSuccess(){
     updateComment(text: commentBody,issue: issueID)
 }
 
-def getBuildSignature(){
-    String buildSign=""
-
-    //Build URL
-    if(env.BUILD_URL != null){
-        buildSign="Build URL: $env.BUILD_URL\\n"
+def getBuildNumberWithLink(){
+    String buildNumberWithLink=""
+    if(env.BUILD_URL){
+        if(isUnix()){
+            buildNumberWithLink="[+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
+        }
+        else{
+            buildNumberWithLink="[+#$env.BUILD_NUMBER+^|$env.BUILD_URL]\\n"
+        }
+        
     }
     else{
+        buildNumberWithLink="+#$env.BUILD_NUMBER+\\n"
         echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
     }
+    return buildNumberWithLink
+}
 
+def getBuildSignature(){
+    String buildSign=""
+    
     //AccountID
     String accountId= getAccountId().toString()
     String commitEmail= getCommitEmail().toString()
@@ -287,6 +300,14 @@ def createIssue(Map args = [failStage: ""]){
 } 
 
 def getIssueID(){
+    String issueID=getIssueFromNamingConvention()
+    if(issueID.equals("")){
+        issueID=getIssueFromJenkinsfile()
+    }
+    return issueID
+}
+
+def getIssueFromJenkinsfile(){
     String issueKey = env.ISSUE_KEY 
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
@@ -347,3 +368,43 @@ def getIssueID(){
     return jiraIssue;
 }
 
+def getIssueFromNamingConvention(){
+    String branchName=env.BRANCH_NAME;
+    String prTitle=env.CHANGE_TITLE;
+    String commitMessage=""
+    String jiraIssue=""
+    Boolean isIssueMentioned=true
+    int issueKeyStart=0
+    int issueKeyEnd=0
+
+    if(isUnix()){
+        commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
+    }
+    else{
+        commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf("\n")+1).trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
+    }
+
+    //Example:
+    //feature/CICD-13-feature-description
+    //If "/" is found start from next index, else start from index 0
+    issueKeyStart=branchName.indexOf("/")
+    if(issueKeyStart==-1){
+        issueKeyStart=0
+    }
+    else{
+        issueKeyStart++
+    }
+
+    //Check for IssueID in branchName
+    jiraIssue=checkForIssueIdRegex(message: branchName,startIndex: issueKeyStart)
+    if(!jiraIssue.equals("")){
+        return jiraIssue
+    }
+    //Check for IssueID in commitMessage
+    else{
+        jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
+        return jiraIssue
+    }
+}
