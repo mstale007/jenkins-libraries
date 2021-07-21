@@ -75,7 +75,7 @@ def getBuildSignature(){
     //AccountID
     String accountId= getAccountId().toString()
     String commitEmail= getCommitEmail().toString()
-    if(accountID!=""){
+    if(accountId!=""){
         buildSign+="Committed by: [~accountid:$accountId]\\n"
     }
     else{
