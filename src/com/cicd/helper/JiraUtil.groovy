@@ -64,26 +64,27 @@ def updateJirawithSuccess(){
 
 def getBuildSignature(){
     String buildSign=""
+
     //Build URL
     if(env.BUILD_URL != null){
-        buildSign="Build URL: [+#$env.BUILD_NUMBER+|$"env.BUILD_URL"]\\n"
+        buildSign="Build URL: $env.BUILD_URL\\n"
     }
     else{
-        buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
         echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
     }
+
     //AccountID
     String accountId= getAccountId().toString()
     String commitEmail= getCommitEmail().toString()
+    String date= new Date()
+
     if(accountId!=""){
-        buildSign+="Committed by: [~accountid:$accountId]\\n"
+        buildSign+="Committed by: [~accountid:$accountId] on $date\\n"
     }
     else{
-        buildSign+="Committed by: $commitEmail\\n"
+        buildSign+="Committed by: $commitEmail on $date\\n"
     }
-    //Timestamp
-    String date= new Date()
-    buildSign+="Committed on: $date\\n"
+
     return buildSign
 }
 
