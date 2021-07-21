@@ -73,7 +73,7 @@ def getBuildSignature(){
     //     echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
     // }
     //AccountID
-    String accountId= getAccountId().toString()
+    String accountId= getAccountId()[0].toString()
     //String commitEmail= getAccountId()[1].toString()
     if(accountID!=""){
         buildSign+="Committed by: [~accountid:$accountId]\\n"
@@ -105,7 +105,7 @@ def updateComment(Map args =[text: "", issue: ""]){
 def getJSON(response){
     def jsonSlurper = new JsonSlurperClassic()
     def cfg = jsonSlurper.parseText(response)
-    //jsonSlurper=null
+    jsonSlurper=null
     return cfg
 }
 
@@ -120,11 +120,10 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     else{
         response=bat(script:"type $filename",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
-        echo response
     }
 
     def cucumber_json=getJSON(response)
-    //echo cucumber_json
+
     String table_seperator=""
     if(isUnix()){
         table_seperator="|"
@@ -144,11 +143,6 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     comment+="\\n"
     return comment
     //updateComment(text: "BDD Test Report for build #$env.BUILD_NUMBER:\\n"+comment, issue: issueID)
-}
-
-def BDDtoComment(args){
-    String comment=getBDD()
-    updateComment(text: comment,issue: args.issueID)
 }
 
 @NonCPS
@@ -186,14 +180,6 @@ String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
     return comment 
 }
 
-def xmlToComment(Map args = [path: "C:/", issue: ""]){
-
-    String comment = getXML(path: args.path.toString())
-    String issue_ID = args.issue.toString()
-
-    updateComment(text: "Junit Test Reports for Build #$env.BUILD_NUMBER:\\n" + comment, issue: issue_ID)
-}
-
 def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
     
     String issue_ID = args.issue.toString()
@@ -212,7 +198,7 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
 def addAssignee(Map args = [issue: ""]){
 
     String issue_ID = args.issue.toString()
-    String accountId = getAccountId().toString()
+    String accountId = getAccountId()[0].toString()
 
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
@@ -242,13 +228,14 @@ String getAccountIdParser(response) {
 def getAccountId(){
     String accountId = ""
     String response = ""
+    String commitEmail = ""
     
     if(isUnix()){
-        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
         response = sh(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
-        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
         commitEmail=commitEmail.substring(commitEmail.indexOf(">")+1).trim()
         commitEmail=commitEmail.substring(commitEmail.indexOf("\n")+1).trim()
         commitEmail=commitEmail[1..-2]
@@ -257,7 +244,7 @@ def getAccountId(){
         response = response.substring(response.indexOf("\n")+1).trim()
     }
     response = getAccountIdParser(response)
-    return response
+    return [response,commitEmail]
 }
 
 @NonCPS
