@@ -1,6 +1,6 @@
 package com.cicd.helper
 
-import groovy.json.JsonSlurperClassic
+import groovy.json.JsonSlurper
 
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
@@ -125,7 +125,7 @@ def updateComment(Map args =[text: "", issueID: ""]){
 
 @NonCPS
 def getJSON(filePath){
-    def jsonSlurper = new JsonSlurperClassic()
+    def jsonSlurper = new JsonSlurper()
     def cfg = jsonSlurper.parse(filePath)
     jsonSlurper=null
     return cfg
