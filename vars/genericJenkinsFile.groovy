@@ -3,6 +3,8 @@ import com.cicd.helper.JiraUtil
 def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
     def jiraUtil = new JiraUtil()
     def LAST_STAGE = ""
+    def BDD_REPORT = false
+    def UNIT_TEST_REPORT = false
 
     pipeline {
         agent any
@@ -13,8 +15,6 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
-            UNIT_TEST_REPORT = "false"
-            BDD_REPORT = "false"
             FAIL_STAGE = ""
             PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
             PROJECT_NAME = readMavenPom().getArtifactId()
@@ -76,8 +76,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        env.UNIT_TEST_REPORT = "true"
-                        echo env.UNIT_TEST_REPORT
+                        UNIT_TEST_REPORT = true
 
                         if(isUnix()) {
                             sh "mvn -Dtest=UnitTests test jacoco:report"
@@ -116,9 +115,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        env.BDD_REPORT = "true"
-                        echo env.BDD_REPORT
-
+                        BDD_REPORT = true
+                        
                         if(isUnix()) {
                             sh "mvn -Dtest=TestRunner test"
                         }
@@ -163,29 +161,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             failure {
                 echo "Failure"
                 script {
-
-                    //String issueID = jiraUtil.getIssueID().toString()
-                    // if(issueID.equals("")){
-                    //     issueID = jiraUtil.createIssue(failStage: LAST_STAGE)
-                    //     jiraUtil.addAssignee(issue: issueID)
-                    // }
-
-                    // jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Failed at stage $LAST_STAGE", issue: issueID)
-                    // if(env.UNIT_TEST_REPORT == true) {
-                    //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
-                    // }
-                    // else {
-                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Unit tests were not performed due to failure at an earlier stage", issue: issueID)
-                    // }
-
-                    // if(env.BDD_REPORT == true) {
-                    //     //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
-                    //     jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
-                    // }
-                    // else {
-                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: BDD tests were not performed due to failure at an earlier stage", issue: issueID)
-                    // }
-                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE)
+                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT)
                 }
             }
             //cleanup{} 
