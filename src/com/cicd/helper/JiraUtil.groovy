@@ -127,7 +127,7 @@ def updateComment(Map args =[text: "", issueID: ""]){
 @NonCPS
 def getJSON(filePath){
     def jsonSlurper = new JsonSlurper()
-    def cfg = jsonSlurper.parse(filePath)
+    def cfg = jsonSlurper.parse(filePath[0])
     jsonSlurper=null
     return cfg
 }
