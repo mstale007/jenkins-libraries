@@ -93,7 +93,7 @@ def getBuildNumberWithLink(){
 
 def getBuildSignature(){
     String buildSign=""
-    
+
     //AccountID
     String accountId= getAccountId().toString()
     String commitEmail= getCommitEmail().toString()
@@ -406,5 +406,33 @@ def getIssueFromNamingConvention(){
     else{
         jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
         return jiraIssue
+    }
+}
+
+//Check for pattern [A-Z]+-[0-9]+ (i.e.: issueKey-issueNumber) from given startindex
+def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
+    int issueKeyStart=args.startIndex
+    int issueKeyEnd=issueKeyStart
+    String jiraIssue=""
+    while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[A-Z]")){
+        issueKeyEnd++
+    }
+    //If no capital letters found
+    if(issueKeyEnd==issueKeyStart || args.message[issueKeyEnd]!="-"){
+        return ""
+    }
+    //Skip "-"
+    issueKeyEnd++
+    Boolean isNumberPresent=false
+    while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[0-9]")){
+        isNumberPresent=true
+        issueKeyEnd++
+    }
+    if(isNumberPresent){
+        jiraIssue=args.message.substring(issueKeyStart,issueKeyEnd)
+        return jiraIssue
+    }
+    else{
+        return ""
     }
 }
