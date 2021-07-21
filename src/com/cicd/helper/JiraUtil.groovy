@@ -367,6 +367,7 @@ def getIssueFromJenkinsfile(){
             }
         }
     }
+    echo "Returned JF issue: $jiraIssue"
     return jiraIssue;
 }
 
@@ -402,11 +403,13 @@ def getIssueFromNamingConvention(){
     //Check for IssueID in branchName
     jiraIssue=checkForIssueIdRegex(message: branchName,startIndex: issueKeyStart)
     if(!jiraIssue.equals("")){
+        echo "Returned NC issue: $jiraIssue"
         return jiraIssue
     }
     //Check for IssueID in commitMessage
     else{
         jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
+        echo "Returned NC issue: $jiraIssue"
         return jiraIssue
     }
 }
