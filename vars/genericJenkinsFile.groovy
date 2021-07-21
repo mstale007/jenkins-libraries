@@ -77,6 +77,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     script {
                         LAST_STAGE = env.STAGE_NAME
                         env.UNIT_TEST_REPORT = true
+                        echo env.UNIT_TEST_REPORT
 
                         if(isUnix()) {
                             sh "mvn -Dtest=UnitTests test jacoco:report"
@@ -116,7 +117,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     script {
                         LAST_STAGE = env.STAGE_NAME
                         env.BDD_REPORT = true
-
+                        echo env.BDD_REPORT
+                        
                         if(isUnix()) {
                             sh "mvn -Dtest=TestRunner test"
                         }
