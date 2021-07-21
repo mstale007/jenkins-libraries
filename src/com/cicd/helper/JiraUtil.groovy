@@ -1,6 +1,7 @@
 package com.cicd.helper
 
 import groovy.json.JsonSlurper
+import groovy.json.JsonSlurperClassic
 
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
