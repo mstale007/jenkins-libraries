@@ -24,7 +24,7 @@ def updateJirawithFailure(args){
     if(env.BDD_REPORT == true){
         //BDD Reports
         commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
-        //commentBody+=getBDD()
+        commentBody+=getBDD()
         sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
     }
     else{
@@ -73,8 +73,8 @@ def getBuildSignature(){
     //     echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
     // }
     //AccountID
-    String accountId= getAccountId()[0].toString()
-    //String commitEmail= getAccountId()[1].toString()
+    String accountId= getAccountId().toString()
+    String commitEmail= getCommitEmail().toString()
     if(accountID!=""){
         buildSign+="Committed by: [~accountid:$accountId]\\n"
     }
@@ -198,7 +198,7 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
 def addAssignee(Map args = [issue: ""]){
 
     String issue_ID = args.issue.toString()
-    String accountId = getAccountId()[0].toString()
+    String accountId = getAccountId().toString()
 
 
     String body ='{\\"accountId\\": \\"'+accountId+'\\"}'
@@ -212,40 +212,45 @@ def addAssignee(Map args = [issue: ""]){
 
 @NonCPS
 String getAccountIdParser(response) {
-    if(response.length!=0){
-        def jsonSlurper = new JsonSlurperClassic()
-        parse = jsonSlurper.parseText(response)
-        accountId = parse.accountId[0]
-        return accountId; 
-    }
-    else{
-        return ""
-    }
+    def jsonSlurper = new JsonSlurperClassic()
+    parse = jsonSlurper.parseText(response)
+    accountId = parse.accountId[0]
+    return accountId; 
 }
 
+def getCommitEmail() {
+    
+    if(isUnix()) {
+        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+    }
+    else {
+        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+    }
 
-//Return Jira acountID from commitEmail, if no accountID exists return commitEmail
+    return commitEmail
+}
+
 def getAccountId(){
     String accountId = ""
     String response = ""
-    String commitEmail = ""
     
     if(isUnix()){
-        commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
         response = sh(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"")
     }
     else{
-        commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
         commitEmail=commitEmail.substring(commitEmail.indexOf(">")+1).trim()
         commitEmail=commitEmail.substring(commitEmail.indexOf("\n")+1).trim()
         commitEmail=commitEmail[1..-2]
         echo "commitEmail : $commitEmail"
         response = bat(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/user/search?query="+commitEmail+" \" -H \"Authorization:" + env.AUTH_TOKEN + "\"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
         response = response.substring(response.indexOf("\n")+1).trim()
-    }
-    response = getAccountIdParser(response)
-    return [response,commitEmail]
+    }                  
+    
+    return getAccountIdParser(response)
 }
+ 
 
 @NonCPS
 String parseJsonForIssueId(response) {
