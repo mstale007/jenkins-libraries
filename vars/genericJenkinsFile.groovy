@@ -13,8 +13,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
-            UNIT_TEST_REPORT = false
-            BDD_REPORT = false
+            UNIT_TEST_REPORT = "false"
+            BDD_REPORT = "false"
             FAIL_STAGE = ""
             PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
             PROJECT_NAME = readMavenPom().getArtifactId()
@@ -76,7 +76,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        env.UNIT_TEST_REPORT = true
+                        env.UNIT_TEST_REPORT = "true"
                         echo env.UNIT_TEST_REPORT
 
                         if(isUnix()) {
@@ -116,9 +116,9 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        env.BDD_REPORT = true
+                        env.BDD_REPORT = "true"
                         echo env.BDD_REPORT
-                        
+
                         if(isUnix()) {
                             sh "mvn -Dtest=TestRunner test"
                         }
