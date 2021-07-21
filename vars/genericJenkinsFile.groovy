@@ -5,6 +5,8 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
     def LAST_STAGE = ""
     def BDD_REPORT = false
     def UNIT_TEST_REPORT = false
+    def PASSED_UT = false
+    def PASSED_BDD = false
 
     pipeline {
         agent any
@@ -91,6 +93,11 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         junit '**/target/surefire-reports/*.xml'
                         jacoco()
                     }
+                    success {
+                        script {
+                            PASSED_UT = true
+                        }
+                    }
                 }
             }
             stage('Run on localhost') {
@@ -138,6 +145,11 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                                 ]
                             ]
                     }
+                    success {
+                        script {
+                            PASSED_BDD = true
+                        }
+                    }
                 }
             }
         }
@@ -145,23 +157,13 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    //String issueID = jiraUtil.getIssueID().toString()
-                    // if(!issueID.equals("")){
-                    //     jiraUtil.updateComment(text: "Build #$env.BUILD_NUMBER: Successful", issue: issueID)
-                    //     jiraUtil.xmlToComment(path: "$env.BUILD_FOLDER_PATH/junitResult.xml", issue: issueID)                    
-                    //     //jiraUtil.updateCommentwithBDD(filePath: "$JENKINS_HOME/jobs/${PIPELINE_ARRAY[0]}/branches/${env.BRANCH_NAME}/cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4/cucumber-trends.json", issue: issueID)
-                    //     jiraUtil.sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
-                    // }
-                    // else {
-                    //     echo "No issue updated/ no new issue created"
-                    // }
                     jiraUtil.updateJirawithSuccess()
                 }
             }
             failure {
                 echo "Failure"
                 script {
-                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT)
+                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
                 }
             }
             //cleanup{} 

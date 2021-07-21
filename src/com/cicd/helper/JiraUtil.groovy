@@ -14,7 +14,12 @@ def updateJirawithFailure(args){
  
     if(args.unitTestReport == true){
         //XML reports
-        commentBody+="{panel:bgColor=#fffae6}\\nJunit Test Reports:\\n{panel}\\n"
+        if(args.passedUT == true) {
+            commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
+        }
+        else {
+            commentBody+="{panel:bgColor=#fffae6}\\nJunit Test Reports:\\n{panel}\\n"
+        }
         commentBody+=getXML()
     }
     else{
@@ -23,17 +28,22 @@ def updateJirawithFailure(args){
     
     if(args.bddReport == true){
         //BDD Reports
-        commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
+        if(args.passedBDD == true) {
+            commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
+        }
+        else {
+            commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
+        }
         commentBody+=getBDD()
         sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
     }
     else{
-       commentBody+="{panel:bgColor=#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
+       commentBody+="{panel:bgColor==#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
     }
 
     //Build Signature
     commentBody+=getBuildSignature()
-    echo "Comment: $commentBody"
+    
     updateComment(text: commentBody, issue:issueID)
 }
 
@@ -51,14 +61,12 @@ def updateJirawithSuccess(){
     
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
-    
     commentBody+=getBDD()
     sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
     commentBody+=getBuildSignature()
 
-    echo "Comment: $commentBody"
     updateComment(text: commentBody,issue: issueID)
 }
 
