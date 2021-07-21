@@ -77,10 +77,10 @@ def getBuildNumberWithLink(){
     String buildNumberWithLink=""
     if(env.BUILD_URL){
         if(isUnix()){
-            buildNumberWithLink="[+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
+            buildNumberWithLink="[+#$env.BUILD_NUMBER+|$env.BUILD_URL]"
         }
         else{
-            buildNumberWithLink="[+#$env.BUILD_NUMBER+^|$env.BUILD_URL]\\n"
+            buildNumberWithLink="[+#$env.BUILD_NUMBER+^|$env.BUILD_URL]"
         }
         
     }
