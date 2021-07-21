@@ -43,7 +43,7 @@ def updateJirawithFailure(args){
 
     //Build Signature
     commentBody+=getBuildSignature()
-    
+
     updateComment(text: commentBody, issue:issueID)
 }
 
@@ -53,7 +53,7 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="Build #${env.BUILD_NUMBER} Successful\\n"
+    String commentBody="{panel:bgColor=#e3fcef}\\nBuild #${env.BUILD_NUMBER} Successful\\n{panel}\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
