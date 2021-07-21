@@ -32,7 +32,7 @@ def updateJirawithFailure(args){
     }
 
     //Build Signature
-    //commentBody+=getBuildSignature()
+    commentBody+=getBuildSignature()
     echo "Comment: $commentBody"
     updateComment(text: commentBody, issue:issueID)
 }
@@ -56,7 +56,7 @@ def updateJirawithSuccess(){
     sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
 
     //Build Signature
-    //commentBody+=getBuildSignature()
+    commentBody+=getBuildSignature()
 
     echo "Comment: $commentBody"
     updateComment(text: commentBody,issue: issueID)
@@ -65,13 +65,13 @@ def updateJirawithSuccess(){
 def getBuildSignature(){
     String buildSign=""
     //Build URL
-    // if(env.BUILD_URL){
-    //     buildSign="Build URL: [+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
-    // }
-    // else{
-    //     buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
-    //     echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
-    // }
+    if(env.BUILD_URL){
+        buildSign="Build URL: [+#$env.BUILD_NUMBER+|$env.BUILD_URL]\\n"
+    }
+    else{
+        buildSign="Build URL: +#$env.BUILD_NUMBER+\\n"
+        echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
+    }
     //AccountID
     String accountId= getAccountId().toString()
     String commitEmail= getCommitEmail().toString()
