@@ -226,7 +226,7 @@ def getCommitEmail() {
     else {
         String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
     }
-
+    echo "email $commitEmail"
     return commitEmail
 }
 
