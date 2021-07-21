@@ -52,7 +52,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
-                        error
+                        
                         if(isUnix()) {
                             sh "mvn clean install -DskipTests"
                         }
