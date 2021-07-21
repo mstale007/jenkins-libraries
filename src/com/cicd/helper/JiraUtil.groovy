@@ -195,11 +195,11 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
     String link = args.attachmentLink.toString()
 
     if(isUnix()) {
-        sh(script: "zip " + link + ".zip " + link)
+        sh(script: "zip " + env.BUILD_NUMBER + "-" + link + ".zip " + link)
         sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive " + link + " " + link + ".zip")
+        bat(script: "powershell Compress-Archive " + link + " " + env.BUILD_NUMBER + "-" + link + ".zip")
         bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
     }
 }
