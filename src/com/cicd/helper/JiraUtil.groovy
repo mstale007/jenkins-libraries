@@ -220,11 +220,14 @@ String getAccountIdParser(response) {
 
 def getCommitEmail() {
     
+    String commitEmail
+
     if(isUnix()) {
-        String commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
+        echo "isUnix $commitEmail"
     }
     else {
-        String commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
+        commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
     }
     echo "email $commitEmail"
     return commitEmail
