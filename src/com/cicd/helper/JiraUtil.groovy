@@ -11,7 +11,8 @@ def updateJirawithFailure(args){
         addAssignee(issue: issueID)
     }
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
-
+    echo env.UNIT_TEST_REPORT
+    echo env.BDD_REPORT
     if(env.UNIT_TEST_REPORT == true){
         //XML reports
         commentBody+="{panel:bgColor=#fffae6}\\nJunit Test Reports:\\n{panel}\\n"
