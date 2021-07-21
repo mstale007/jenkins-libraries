@@ -124,9 +124,9 @@ def updateComment(Map args =[text: "", issueID: ""]){
 }
 
 @NonCPS
-def getJSON(response){
+def getJSON(filePath){
     def jsonSlurper = new JsonSlurperClassic()
-    def cfg = jsonSlurper.parseText(response)
+    def cfg = jsonSlurper.parseText(filePath)
     jsonSlurper=null
     return cfg
 }
@@ -136,15 +136,15 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     String issueID = args.issue.toString()
     filename = args.filePath.toString()
 
-    if(isUnix()){
-        response=sh(script:"cat \"$filename\"",returnStdout: true).trim()
-    }
-    else{
-        response=bat(script:"type \"$filename\"",returnStdout: true).trim()
-        response=response.substring(response.indexOf("\n")+1).trim()
-    }
+    // if(isUnix()){
+    //     response=sh(script:"cat \"$filename\"",returnStdout: true).trim()
+    // }
+    // else{
+    //     response=bat(script:"type \"$filename\"",returnStdout: true).trim()
+    //     response=response.substring(response.indexOf("\n")+1).trim()
+    // }
 
-    def cucumber_json=getJSON(response)
+    def cucumber_json=getJSON(filename)
 
     String table_seperator=""
     if(isUnix()){
