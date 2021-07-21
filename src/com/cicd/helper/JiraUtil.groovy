@@ -301,8 +301,10 @@ def createIssue(Map args = [failStage: ""]){
 
 def getIssueID(){
     String issueID=getIssueFromNamingConvention()
+    echo "From Naming: $issueID"
     if(issueID.equals("")){
         issueID=getIssueFromJenkinsfile()
+        echo "From JenkinsFile: $issueID"
     }
     return issueID
 }
