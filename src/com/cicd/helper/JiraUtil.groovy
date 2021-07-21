@@ -126,9 +126,11 @@ def updateComment(Map args =[text: "", issueID: ""]){
 
 @NonCPS
 def getJSON(filePath){
-    def jsonSlurper = new JsonSlurper()
-    File file= new File(filePath)
-    def cfg = jsonSlurper.parse(file: file,charset: "UTF-8")
+    def jsonSlurper = new JsonSlurperClassic()
+    //Requires Danger approvals
+    //File file= new File(filePath)
+    //def cfg = jsonSlurper.parse(file,"UTF-8")
+    def cfg = jsonSlurper.parseText(response)
     jsonSlurper=null
     return cfg
 }
@@ -138,15 +140,15 @@ def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\b
     String issueID = args.issue.toString()
     filename = args.filePath.toString()
 
-    // if(isUnix()){
-    //     response=sh(script:"cat \"$filename\"",returnStdout: true).trim()
-    // }
-    // else{
-    //     response=bat(script:"type \"$filename\"",returnStdout: true).trim()
-    //     response=response.substring(response.indexOf("\n")+1).trim()
-    // }
+    if(isUnix()){
+        response=sh(script:"cat \"$filename\"",returnStdout: true).trim()
+    }
+    else{
+        response=bat(script:"type \"$filename\"",returnStdout: true).trim()
+        response=response.substring(response.indexOf("\n")+1).trim()
+    }
 
-    def cucumber_json=getJSON(filename)
+    def cucumber_json=getJSON(response)
 
     String table_seperator=""
     if(isUnix()){
@@ -303,10 +305,8 @@ def createIssue(Map args = [failStage: ""]){
 
 def getIssueID(){
     String issueID=getIssueFromNamingConvention()
-    echo "From Naming: $issueID"
     if(issueID.equals("")){
         issueID=getIssueFromJenkinsfile()
-        echo "From JenkinsFile: $issueID"
     }
     return issueID
 }
@@ -369,7 +369,6 @@ def getIssueFromJenkinsfile(){
             }
         }
     }
-    echo "Returned JF issue: $jiraIssue"
     return jiraIssue;
 }
 
@@ -405,13 +404,11 @@ def getIssueFromNamingConvention(){
     //Check for IssueID in branchName
     jiraIssue=checkForIssueIdRegex(message: branchName,startIndex: issueKeyStart)
     if(!jiraIssue.equals("")){
-        echo "Returned NC issue: $jiraIssue"
         return jiraIssue
     }
     //Check for IssueID in commitMessage
     else{
         jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
-        echo "Returned NC issue: $jiraIssue"
         return jiraIssue
     }
 }
