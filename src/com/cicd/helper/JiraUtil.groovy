@@ -137,10 +137,10 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     filename = args.filePath.toString()
 
     if(isUnix()){
-        response=sh(script:"cat $filename",returnStdout: true).trim()
+        response=sh(script:"cat \"$filename\"",returnStdout: true).trim()
     }
     else{
-        response=bat(script:"type $filename",returnStdout: true).trim()
+        response=bat(script:"type \"$filename\"",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
 
