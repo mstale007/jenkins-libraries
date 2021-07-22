@@ -72,34 +72,34 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     }
                 }
             }
-            stage("Unit Tests"){
-                steps{
-                    echo "Stage: $env.STAGE_NAME"
+            // stage("Unit Tests"){
+            //     steps{
+            //         echo "Stage: $env.STAGE_NAME"
                     
-                    script {
-                        LAST_STAGE = env.STAGE_NAME
-                        UNIT_TEST_REPORT = true
+            //         script {
+            //             LAST_STAGE = env.STAGE_NAME
+            //             UNIT_TEST_REPORT = true
 
-                        if(isUnix()) {
-                            sh "mvn -Dtest=UnitTests test jacoco:report"
-                        }
-                        else {
-                            bat "mvn -Dtest=UnitTests test jacoco:report"
-                        }
-                    }
-                }
-                post{
-                    always {
-                        junit '**/target/surefire-reports/*.xml'
-                        jacoco()
-                    }
-                    success {
-                        script {
-                            PASSED_UT = true
-                        }
-                    }
-                }
-            }
+            //             if(isUnix()) {
+            //                 sh "mvn -Dtest=UnitTests test jacoco:report"
+            //             }
+            //             else {
+            //                 bat "mvn -Dtest=UnitTests test jacoco:report"
+            //             }
+            //         }
+            //     }
+            //     post{
+            //         always {
+            //             junit '**/target/surefire-reports/*.xml'
+            //             jacoco()
+            //         }
+            //         success {
+            //             script {
+            //                 PASSED_UT = true
+            //             }
+            //         }
+            //     }
+            // }
             stage('Run on localhost') {
                 steps {
                     echo "Stage: $env.STAGE_NAME"
@@ -153,20 +153,20 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                 }
             }
         }
-        post{
-            success {
-                echo "Success"
-                script {
-                    jiraUtil.updateJirawithSuccess()
-                }
-            }
-            failure {
-                echo "Failure"
-                script {
-                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
-                }
-            }
-            //cleanup{} 
-        }
+        // post{
+        //     success {
+        //         echo "Success"
+        //         script {
+        //             jiraUtil.updateJirawithSuccess()
+        //         }
+        //     }
+        //     failure {
+        //         echo "Failure"
+        //         script {
+        //             jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+        //         }
+        //     }
+        //     //cleanup{} 
+        // }
     }
 }
