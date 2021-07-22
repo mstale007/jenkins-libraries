@@ -6,11 +6,13 @@ import groovy.json.JsonSlurperClassic
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
     
-    if(issueID.equals("")){
+    if(issueID.equals("") || !checkIssueExist()){
         issueID = createIssue(failStage: args.failStage)
         echo issueID
         addAssignee(issue: issueID)
     }
+
+    issueStatus()
 
     String buildNumberWithLink=getBuildNumberWithLink()
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild $buildNumberWithLink Failed at stage: $args.failStage\\n{panel}\\n"
@@ -221,7 +223,7 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
     }
 }
 
-def issueStatus(Map args =[text: "", issueID: ""]){
+def issueStatus(Map args = [issueID: ""]){
     String issueID = args.issue.toString()
     String status = ""
     String response = ""
@@ -246,7 +248,8 @@ def issueStatus(Map args =[text: "", issueID: ""]){
     }
 }
 
-def checkIssueExist(){
+def checkIssueExist(Map args = [issue: ""]){
+     String issue_ID = args.issue.toString()    
      boolean issueExist
      String response = ""
      if(isUnix()){
