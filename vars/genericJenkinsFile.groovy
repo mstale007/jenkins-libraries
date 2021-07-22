@@ -30,6 +30,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     echo "Stage: $env.STAGE_NAME"
                     echo "Branch name is: $env.BRANCH_NAME"
                     bat "set"
+                    echo "$nv.JOB_NAME"
                     
                     script {
                         LAST_STAGE = env.STAGE_NAME
