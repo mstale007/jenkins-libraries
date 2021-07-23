@@ -212,12 +212,12 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
     String link = args.attachmentLink.toString()
 
     if(isUnix()) {
-        sh(script: "zip \'cucumber_reports-$env.NEW_BRANCH_NAME-#$env.BUILD_NUMBER-.zip\' \'" + link+"\'")
-        sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+        sh(script: "zip " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip " + link + "/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
+        sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive \'" + link + "\' \'cucumber_reports-$env.NEW_BRANCH_NAME-#$env.BUILD_NUMBER-.zip\'")
-        bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
+        bat(script: "powershell Compress-Archive " + link + "/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4 " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
+        bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
 }
 
