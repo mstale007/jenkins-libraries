@@ -330,7 +330,16 @@ def getAccountId(){
     
     return getAccountIdParser(response)
 }
- 
+
+def deleteAttachment(Map args = [attachment: ""]){
+    String attachmentID = args.attachment.toString()
+    if(isUnix()){
+        sh(script: "curl --request DELETE \"" + env.JIRA_BOARD + "/attachment/"+attachmentID+"\" --header \"Authorization:" + env.AUTH_TOKEN + "\"")
+    }
+    else{
+        bat(script: "curl --request DELETE \"" + env.JIRA_BOARD + "/attachment/"+attachmentID+"\" --header \"Authorization:" + env.AUTH_TOKEN + "\"")
+    }
+}
 
 @NonCPS
 String parseJsonForIssueId(response) {
