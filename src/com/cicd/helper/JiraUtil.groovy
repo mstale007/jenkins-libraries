@@ -135,7 +135,7 @@ def getJSON(filePath){
     return cfg
 }
 
-def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\\cucumber-reports**\\cucumber-trends.json\"", issue: ""]) {
+def getBDD(Map args = [filePath: "\'$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\\cucumber-reports**\\cucumber-trends.json\'", issue: ""]) {
 
     String issueID = args.issue.toString()
     filename = args.filePath.toString()
