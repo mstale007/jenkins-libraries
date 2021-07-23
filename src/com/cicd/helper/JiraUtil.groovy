@@ -38,7 +38,7 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
         commentBody+=getBDD()
-        sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+        sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports**", issue: issueID)
     }
     else{
        commentBody+="{panel:bgColor==#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -66,7 +66,7 @@ def updateJirawithSuccess(){
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     commentBody+=getBDD()
-    sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4", issue: issueID)
+    sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports**", issue: issueID)
 
     //Build Signature
     commentBody+=getBuildSignature()
@@ -212,11 +212,11 @@ def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
     String link = args.attachmentLink.toString()
 
     if(isUnix()) {
-        sh(script: "zip \'" + link + ".zip\' \'" + link+"\'")
+        sh(script: "zip \'cucumber_reports-$env.NEW_BRANCH_NAME-#$env.BUILD_NUMBER-.zip\' \'" + link+"\'")
         sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive \'" + link + "\' \'" + link + ".zip\'")
+        bat(script: "powershell Compress-Archive \'" + link + "\' \'cucumber_reports-$env.NEW_BRANCH_NAME-#$env.BUILD_NUMBER-.zip\'")
         bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + link + ".zip\"")
     }
 }
