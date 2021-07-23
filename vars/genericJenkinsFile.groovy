@@ -1,21 +1,38 @@
-import com.cicd.helper.JiraUpdater
-import test
-def call(Map args =[buildMode: "mvn",jira_issue: ""]){
-    def jira_updater= new JiraUpdater()
-    pipeline{
+import com.cicd.helper.JiraUtil
+
+def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
+    def jiraUtil = new JiraUtil()
+    def LAST_STAGE = ""
+    def BDD_REPORT = false
+    def UNIT_TEST_REPORT = false
+    def PASSED_UT = false
+    def PASSED_BDD = false
+
+    pipeline {
         agent any
 
         //options{}
 
         //parameters{}
 
-        //environment{}
+        environment {
+            ISSUE_KEY = args.issueKey.toString()
+            FAIL_STAGE = ""
+            PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
+            PROJECT_NAME = readMavenPom().getArtifactId()
+            PROJECT_VERSION = readMavenPom().getVersion()
+            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
+        }
 
-        stages{
-            stage("Initialize"){
+        stages {
+            stage("Initialize") {
                 steps{
-                    echo "Changed: $args.jira_issue"
-                    echo "Intializing..!"
+                    echo "Stage: $env.STAGE_NAME"
+                    echo "Branch name is: $env.BRANCH_NAME"
+                    
+                    script {
+                        LAST_STAGE = env.STAGE_NAME
+                    }
                 }
                 post{
                     success{
@@ -26,22 +43,25 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
                     }
                 }
             }
-            stage("Update Dependencies"){
-                steps{
-                    echo "Updating..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Update Successful"
-                    }
-                    failure{
-                        echo "JIRA: Update Failed"
-                    }
+            stage("Load Env Variables") {
+                steps {
+                    load "env-vars/env.groovy"
                 }
             }
             stage("Build"){
                 steps{
-                    echo "Building..!"
+                    echo "Stage: $env.STAGE_NAME"
+                    
+                    script {
+                        LAST_STAGE = env.STAGE_NAME
+                        
+                        if(isUnix()) {
+                            sh "mvn clean install -DskipTests"
+                        }
+                        else {
+                            bat "mvn clean install -DskipTests"
+                        }
+                    }
                 }
                 post{
                     success{
@@ -54,145 +74,99 @@ def call(Map args =[buildMode: "mvn",jira_issue: ""]){
             }
             stage("Unit Tests"){
                 steps{
-                    echo "Unit Testing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Unit Tests Successful"
-                    }
-                    failure{
-                        echo "JIRA: Unit Tests Failed"
-                    }
-                }
-            }
-            stage("Install"){
-                steps{
-                    echo "Installing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Install Successful"
-                    }
-                    failure{
-                        echo "JIRA: Install Failed"
-                    }
-                }
-            }
-            stage("Scoverage Report"){
-                steps{
-                    echo "Reports running..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: S Report Successful"
-                    }
-                    failure{
-                        echo "JIRA: S Report Failed"
-                    }
-                }
-            }
-            stage("Run Sonar"){
-                steps{
-                    echo "Reports running..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: S Report Successful"
-                    }
-                    failure{
-                        echo "JIRA: S Report Failed"
-                    }
-                }
-            }
-            stage("Integration Test"){
-                steps{
-                    echo "Integration Testing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Integration Tests Successful"
-                    }
-                    failure{
-                        echo "JIRA: Integration Tests Failed"
-                    }
-                }
-            }
-            stage("Close artificat version"){
-                steps{
-                    echo "Close artificat version..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Close artificat version Successful"
-                    }
-                    failure{
-                        echo "JIRA: Close artificat version Failed"
-                    }
-                }
-            }
-            stage("Artifactory + Docker + Package"){
-                steps{
-                    echo "ADP ing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: ADP Successful"
-                    }
-                    failure{
-                        echo "JIRA: ADP Failed"
-                    }
-                }
-            }
-            stage("Deploy to INT"){
-                steps{
-                    echo "Deploying..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Deployment Successful"
-                    }
-                    failure{
-                        echo "JIRA: Deployment Failed"
-                    }
-                }
-            }
-            stage("Performance Test"){
-                steps{
-                    echo "Performance Testing..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Performance Testing Successful"
-                    }
-                    failure{
-                        echo "JIRA: Performance Testing Failed"
-                    }
-                }
-            }
-            stage("Staging Test"){
-                steps{
-                    echo "Staging..!"
-                }
-                post{
-                    success{
-                        echo "JIRA: Staging Test Successful"
-                         script{
-                            //tools.update()
+                    echo "Stage: $env.STAGE_NAME"
+                    
+                    script {
+                        LAST_STAGE = env.STAGE_NAME
+                        UNIT_TEST_REPORT = true
 
-                            bat jira_updater.update(issue_ID: args.jira_issue, progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com")
+                        if(isUnix()) {
+                            sh "mvn -Dtest=UnitTests test jacoco:report"
+                        }
+                        else {
+                            bat "mvn -Dtest=UnitTests test jacoco:report"
                         }
                     }
-                    failure{
-                        echo "JIRA: Staging Test Failed"
+                }
+                post{
+                    always {
+                        junit '**/target/surefire-reports/*.xml'
+                        jacoco()
+                    }
+                    success {
+                        script {
+                            PASSED_UT = true
+                        }
+                    }
+                }
+            }
+            stage('Run on localhost') {
+                steps {
+                    echo "Stage: $env.STAGE_NAME"
+
+                    script {
+                        LAST_STAGE = env.STAGE_NAME
+
+                        if(isUnix()) {
+                            sh "java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar &"
+                        }
+                        else {
+                            bat "START /B java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar"
+                        }
+                    }
+                }
+            }
+            stage("BDD Test"){
+                steps{
+                    echo "Stage: $env.STAGE_NAME"
+
+                    script {
+                        LAST_STAGE = env.STAGE_NAME
+                        BDD_REPORT = true
+                        
+                        if(isUnix()) {
+                            sh "mvn -Dtest=TestRunner test"
+                        }
+                        else {
+                            bat "mvn -Dtest=TestRunner test"
+                        }
+                    } 
+                }
+                post{
+                    always {
+                        cucumber buildStatus: 'UNSTABLE',
+                            reportTitle: 'My report',
+                            fileIncludePattern: '**/*.json',
+                            trendsLimit: 10,
+                            classifications: [
+                                [
+                                    'key': 'Browser',
+                                    'value': 'Firefox'
+                                ]
+                            ]
+                    }
+                    success {
+                        script {
+                            PASSED_BDD = true
+                        }
                     }
                 }
             }
         }
         post{
-            always{
-                echo "JIRA: Added BDD test reports"
+            success {
+                echo "Success"
+                script {
+                    jiraUtil.updateJirawithSuccess()
+                }
             }
-            //cleanup{}
+            failure {
+                echo "Failure"
+                script {
+                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                }
+            }
+            //cleanup{} 
         }
     }
 }
