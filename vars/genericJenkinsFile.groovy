@@ -22,7 +22,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             PROJECT_NAME = readMavenPom().getArtifactId()
             PROJECT_VERSION = readMavenPom().getVersion()
             NEW_BRANCH_NAME=env.BRANCH_NAME.replace("/","-")
-            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${NEW_BRANCH_NAME}**/builds/${env.BUILD_NUMBER}"
+            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${NEW_BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
         stages {
