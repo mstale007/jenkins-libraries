@@ -38,7 +38,7 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
         commentBody+=getBDD()
-        sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports**", issue: issueID)
+        sendAttachment(issue: issueID)
     }
     else{
        commentBody+="{panel:bgColor==#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -66,7 +66,7 @@ def updateJirawithSuccess(){
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     commentBody+=getBDD()
-    sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH/cucumber-html-reports**", issue: issueID)
+    sendAttachment( issue: issueID)
 
     //Build Signature
     commentBody+=getBuildSignature()
@@ -206,17 +206,16 @@ String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
     return comment 
 }
 
-def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
+def sendAttachment(Map args = [ issue: ""]) {
     
     String issue_ID = args.issue.toString()
-    String link = args.attachmentLink.toString()
 
     if(isUnix()) {
-        sh(script: "zip " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip " + link + "/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
+        sh(script: "zip " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip " + link + "$env.BUILD_FOLDER_PATH/cucumber-html-reports**")
         sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive " + link + "/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4 " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
+        bat(script: "powershell Compress-Archive " + link + "$env.BUILD_FOLDER_PATH/cucumber-html-reports** " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
         bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
 }
