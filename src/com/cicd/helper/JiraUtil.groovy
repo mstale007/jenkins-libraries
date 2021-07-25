@@ -1,7 +1,7 @@
 package com.cicd.helper
 import groovy.json.JsonSlurperClassic
 
-def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]){
+def update(Map args =[ progressLabel: "Deployed",bddReport: "Success", reportLink:"www.my_bdd.com"]) {
     String issue_ID=getIssueID().toString()
 
     if(!issueID.equals("")){
