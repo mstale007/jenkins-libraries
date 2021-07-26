@@ -135,23 +135,23 @@ def getJSON(filePath){
     return cfg
 }
 
-def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\\cucumber-reports**\"", issue: ""]) {
+def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\"", issue: ""]) {
 
     String issueID = args.issue.toString()
-    filename = args.filePath.toString()
+    folderName = args.filePath.toString()
 
     if(isUnix()){
         response=sh(script:"cat $filename",returnStdout: true).trim()
     }
     else{
-        filename = bat(script:"dir $filename /b",returnStdout: true).trim()
-        echo "Filepath: $filename"
-        filename=filename.substring(filename.indexOf("\n")+1).trim()
-        if(filename.equals("File Not Found")){
+        folderName = bat(script:"dir $filename\\cucumber-reports** /b",returnStdout: true).trim()
+        echo "Folder Name: $folderName"
+        folderName=folderName.substring(folderName.indexOf("\n")+1).trim()
+        if(folderName.equals("File Not Found")){
             echo "[JiraUtil] Cucmber reports File not found"
         }
         else{
-            filename = "\"$filename\\cucumber-trends.json\""
+            filename = "\"$filename\\$folderName\\cucumber-trends.json\""
         }
         response=bat(script:"type $filename",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
