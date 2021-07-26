@@ -1,11 +1,12 @@
 package com.cicd.helper
 
+import groovy.json.JsonSlurper
 import groovy.json.JsonSlurperClassic
 
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
     
-    if(issueID.equals("")){
+    if(issueID.equals("") || !checkIssueExist(issue: issueID)){
         issueID = createIssue(failStage: args.failStage)
         echo issueID
         addAssignee(issue: issueID)
@@ -16,8 +17,9 @@ def updateJirawithFailure(args){
     }
 
     changeIssueStatus(issue: issueID)
-    
-    String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
+
+    String buildNumberWithLink=getBuildNumberWithLink()
+    String commentBody="{panel:bgColor=#ffebe6}\\nBuild $buildNumberWithLink Failed at stage: $args.failStage\\n{panel}\\n"
  
     if(args.unitTestReport == true){
         //XML reports
@@ -42,7 +44,7 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
         commentBody+=getBDD()
-        sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH", issue: issueID)
+        sendAttachment(issue: issueID)
     }
     else{
        commentBody+="{panel:bgColor==#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -60,7 +62,12 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    String commentBody="{panel:bgColor=#e3fcef}\\nBuild #${env.BUILD_NUMBER} Successful\\n{panel}\\n"
+    else if(!checkIssueExist(issue: issueID)){
+        echo "[JiraUtil] Issue $issueID does'nt exists, Invalid issueID mentioned"
+        return
+    }
+    String buildNumberWithLink=getBuildNumberWithLink()
+    String commentBody="{panel:bgColor=#e3fcef}\\nBuild $buildNumberWithLink Successful\\n{panel}\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
@@ -69,7 +76,7 @@ def updateJirawithSuccess(){
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     commentBody+=getBDD()
-    sendAttachment(attachmentLink: "$env.BUILD_FOLDER_PATH", issue: issueID)
+    sendAttachment( issue: issueID)
 
     //Build Signature
     commentBody+=getBuildSignature()
@@ -95,38 +102,16 @@ def getBuildNumberWithLink(){
     return buildNumberWithLink
 }
 
-def checkIssueExist(Map args = [issue: ""]){
-     String issue_ID = args.issue.toString()    
-     boolean issueExist
-     String response = ""
-     if(isUnix()){
-            response = sh(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
-     }
-     else{
-            response = bat(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
-            response = response.substring(response.indexOf("\n")+1).trim()
-     }
-    response = response.substring(19,39)
-    if(response.equals("Issue does not exist")){
-            issueExist = false
-    }
-    else{
-            issueExist = true
-    }
-        
-    return issueExist;
-}
-
 def getBuildSignature(){
     String buildSign=""
 
     //Build URL
     if(env.BUILD_URL != null){
         buildSign="Build URL: $env.BUILD_URL\\n"
-    }
-    else{
-        echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
-    }
+
+
+def getBuildSignature(){
+    String buildSign=""
 
     //AccountID
     String accountId= getAccountId().toString()
@@ -158,23 +143,34 @@ def updateComment(Map args =[text: "", issueID: ""]){
 }
 
 @NonCPS
-def getJSON(response){
+def getJSON(filePath){
     def jsonSlurper = new JsonSlurperClassic()
+    //Requires Danger approvals
+    //File file= new File(filePath)
+    //def cfg = jsonSlurper.parse(file,"UTF-8")
     def cfg = jsonSlurper.parseText(response)
     jsonSlurper=null
     return cfg
 }
 
-def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.BRANCH_NAME}\\cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4\\cucumber-trends.json", issue: ""]) {
+def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}", issue: ""]) {
 
     String issueID = args.issue.toString()
-    filename = args.filePath.toString()
+    String fileName = args.filePath.toString()
 
     if(isUnix()){
-        response=sh(script:"cat $filename",returnStdout: true).trim()
+        response=sh(script:"cat \"$fileName\\cucumber-reports**\\cucumber-trends.json\"",returnStdout: true).trim()
     }
     else{
-        response=bat(script:"type $filename",returnStdout: true).trim()
+        folderName = bat(script:"dir \"$fileName\\cucumber-reports**\" /b",returnStdout: true).trim()
+        folderName=folderName.substring(folderName.indexOf("\n")+1).trim()
+        if(folderName.equals("File Not Found")){
+            echo "[JiraUtil] Cucmber reports File not found"
+        }
+        else{
+            fileName = "\"$fileName\\$folderName\\cucumber-trends.json\""
+        }
+        response=bat(script:"type $fileName",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
 
@@ -236,19 +232,65 @@ String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
     return comment 
 }
 
-def sendAttachment(Map args = [attachmentLink: "target/site/", issue: ""]) {
+def sendAttachment(Map args = [ issue: ""]) {
     
     String issue_ID = args.issue.toString()
-    String link = args.attachmentLink.toString()
 
     if(isUnix()) {
-        sh(script: "zip BDD-Report-Build-" + env.BUILD_NUMBER + ".zip " + link + "/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4")
-        sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
+        sh(script: "zip " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip \'$env.BUILD_FOLDER_PATH/cucumber-html-reports**\'")
+        sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive " + link + "/cucumber-html-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4 BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
-        bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
+        bat(script: "powershell Compress-Archive \'$env.BUILD_FOLDER_PATH/cucumber-html-reports**\' " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
+        bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
+}
+
+def changeIssueStatus(Map args = [issue: ""]){
+    String issue_ID = args.issue.toString()
+    String status = ""
+    String response = ""
+    if(isUnix()){
+        response = sh(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"?fields=status \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+    }
+    else{
+        response = bat(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"?fields=status \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        response = response.substring(response.indexOf("\n")+1).trim()
+    }
+    def jsonSlurper = new JsonSlurperClassic()
+    parse = jsonSlurper.parseText(response)
+    status = parse.fields.status.name
+    if(status.equals("Done")){
+        String body ='{\\"transition\\": {\\"id\\": \\"21\\"}}'
+        if(isUnix()){
+            sh(returnStdout: true,script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/transitions \" --header \"Authorization:" + env.AUTH_TOKEN + " \" --header \"Content-Type:application/json\" -d \""+body+"\"")
+        }
+        else{
+            bat(script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/transitions \"  -H \"Authorization:" + env.AUTH_TOKEN + " \" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+        }
+    }
+}
+
+def checkIssueExist(Map args = [issue: ""]){
+     String issue_ID = args.issue.toString()    
+     boolean issueExist
+     String response = ""
+     if(isUnix()){
+        response = sh(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+     }
+     else{
+        response = bat(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        response = response.substring(response.indexOf("\n")+1).trim()
+     }
+    response = response.substring(19,39)
+    if(response.equals("Issue does not exist")){
+        issueExist = false
+    }
+    else{
+        issueExist = true
+    }
+        
+    return issueExist;
 }
 
 def addAssignee(Map args = [issue: ""]){
@@ -334,6 +376,14 @@ def createIssue(Map args = [failStage: ""]){
 } 
 
 def getIssueID(){
+    String issueID=getIssueFromNamingConvention()
+    if(issueID.equals("")){
+        issueID=getIssueFromJenkinsfile()
+    }
+    return issueID
+}
+
+def getIssueFromJenkinsfile(){
     String issueKey = env.ISSUE_KEY 
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
@@ -394,3 +444,71 @@ def getIssueID(){
     return jiraIssue;
 }
 
+def getIssueFromNamingConvention(){
+    String branchName=env.BRANCH_NAME;
+    String prTitle=env.CHANGE_TITLE;
+    String commitMessage=""
+    String jiraIssue=""
+    Boolean isIssueMentioned=true
+    int issueKeyStart=0
+    int issueKeyEnd=0
+
+    if(isUnix()){
+        commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
+    }
+    else{
+        commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf("\n")+1).trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
+    }
+
+    //Example:
+    //feature/CICD-13-feature-description
+    //If "/" is found start from next index, else start from index 0
+    issueKeyStart=branchName.indexOf("/")
+    if(issueKeyStart==-1){
+        issueKeyStart=0
+    }
+    else{
+        issueKeyStart++
+    }
+
+    //Check for IssueID in branchName
+    jiraIssue=checkForIssueIdRegex(message: branchName,startIndex: issueKeyStart)
+    if(!jiraIssue.equals("")){
+        return jiraIssue
+    }
+    //Check for IssueID in commitMessage
+    else{
+        jiraIssue=checkForIssueIdRegex(message: commitMessage,startIndex: 0)
+        return jiraIssue
+    }
+}
+
+//Check for pattern [A-Z]+-[0-9]+ (i.e.: issueKey-issueNumber) from given startindex
+def checkForIssueIdRegex(Map args=[message:"",startIndex: 0]){
+    int issueKeyStart=args.startIndex
+    int issueKeyEnd=issueKeyStart
+    String jiraIssue=""
+    while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[A-Z]")){
+        issueKeyEnd++
+    }
+    //If no capital letters found
+    if(issueKeyEnd==issueKeyStart || args.message[issueKeyEnd]!="-"){
+        return ""
+    }
+    //Skip "-"
+    issueKeyEnd++
+    Boolean isNumberPresent=false
+    while(issueKeyEnd<args.message.length() && args.message[issueKeyEnd].matches("[0-9]")){
+        isNumberPresent=true
+        issueKeyEnd++
+    }
+    if(isNumberPresent){
+        jiraIssue=args.message.substring(issueKeyStart,issueKeyEnd)
+        return jiraIssue
+    }
+    else{
+        return ""
+    }
+}
