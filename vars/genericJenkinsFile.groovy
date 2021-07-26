@@ -125,13 +125,13 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    jiraUtil.updateJirawithSuccess(bddPath:"$env.WORKSPACE/cucumber-trends.json",xmlPath:"$env.WORKSPACE/junitResult.xml")
+                    jiraUtil.updateJirawithSuccess(bddPath:"\"$env.WORKSPACE\cucumber-trends.json\"",xmlPath:"\"$env.WORKSPACE\junitResult.xml\"")
                 }
             }
             failure {
                 echo "Failure"
                 script {
-                    jiraUtil.updateJirawithFailure(bddPath:"$env.WORKSPACE/cucumber-trends.json",xmlPath:"$env.WORKSPACE/junitResult.xml",failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                    jiraUtil.updateJirawithFailure(bddPath:"\"$env.WORKSPACE\cucumber-trends.json\"",xmlPath:"\"$env.WORKSPACE\junitResult.xml\"",failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
                 }
             }
             //cleanup{} 
