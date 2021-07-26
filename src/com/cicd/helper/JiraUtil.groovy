@@ -370,15 +370,8 @@ def createIssue(Map args = [failStage: ""]){
     return parseJsonForIssueId(response) 
 } 
 
-def getIssueID(){
-    String issueID=getIssueFromNamingConvention()
-    if(issueID.equals("")){
-        issueID=getIssueFromJenkinsfile()
-    }
-    return issueID
-}
 
-def getIssueFromJenkinsfile(){
+def getIssueID(){
     String issueKey = env.ISSUE_KEY 
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
