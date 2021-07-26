@@ -272,10 +272,12 @@ def checkIssueExist(Map args = [issue: ""]){
      }
     response = response.substring(19,39)
     if(response.equals("Issue does not exist")){
-            issueExist = false
+        issueExist = false
+        echo "IssueID does not exist"
     }
     else{
-            issueExist = true
+        issueExist = true
+        echo "IssueID exists"
     }
         
     return issueExist;
