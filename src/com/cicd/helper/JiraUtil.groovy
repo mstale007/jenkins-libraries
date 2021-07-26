@@ -135,7 +135,7 @@ def getJSON(filePath){
     return cfg
 }
 
-def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\\cucumber-reports_fb242bb7-17b2-346f-b0a4-d7a3b25b65b4\\cucumber-trends.json\"", issue: ""]) {
+def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\\cucumber-reports**\"", issue: ""]) {
 
     String issueID = args.issue.toString()
     filename = args.filePath.toString()
@@ -144,6 +144,14 @@ def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\b
         response=sh(script:"cat $filename",returnStdout: true).trim()
     }
     else{
+        filename = bat(script:"dir $filename /b",returnStdout: true).trim()
+        if(filename.equals("File Not Found")){
+            echo "[JiraUtil] Cucmber reports File not found"
+        }
+        else{
+            filename = "\"$filename\\cucumber-trends.json\""
+        }
+        echo "Filepath: $filename"
         response=bat(script:"type $filename",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
