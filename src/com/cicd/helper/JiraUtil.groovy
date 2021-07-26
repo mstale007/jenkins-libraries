@@ -145,6 +145,7 @@ def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\b
     }
     else{
         filename = bat(script:"dir $filename /b",returnStdout: true).trim()
+        echo "Filepath: $filename"
         filename=filename.substring(filename.indexOf("\n")+1).trim()
         if(filename.equals("File Not Found")){
             echo "[JiraUtil] Cucmber reports File not found"
@@ -152,7 +153,6 @@ def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\b
         else{
             filename = "\"$filename\\cucumber-trends.json\""
         }
-        echo "Filepath: $filename"
         response=bat(script:"type $filename",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
