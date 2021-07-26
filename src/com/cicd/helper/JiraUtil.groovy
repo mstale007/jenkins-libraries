@@ -6,11 +6,13 @@ import groovy.json.JsonSlurperClassic
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
     
-    if(issueID.equals("")){
+    if(issueID.equals("") || !checkIssueExist(issue: issueID)){
         issueID = createIssue(failStage: args.failStage)
         echo issueID
         addAssignee(issue: issueID)
     }
+
+    changeIssueStatus(issue: issueID)
 
     String buildNumberWithLink=getBuildNumberWithLink()
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild $buildNumberWithLink Failed at stage: $args.failStage\\n{panel}\\n"
@@ -54,6 +56,10 @@ def updateJirawithSuccess(){
     String issueID = getIssueID().toString()
     if(issueID.equals("")){
         echo "[JiraUtil] No issue updated/ no new issue created"
+        return
+    }
+    else if(!checkIssueExist(issue: issueID)){
+        echo "[JiraUtil] Issue $issueID does'nt exists, Invalid issueID mentioned"
         return
     }
     String buildNumberWithLink=getBuildNumberWithLink()
@@ -141,7 +147,7 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     String fileName = args.filePath.toString()
 
     if(isUnix()){
-        response=sh(script:"cat $fileName",returnStdout: true).trim()
+        response=sh(script:"cat \"$fileName\\cucumber-reports**\\cucumber-trends.json\"",returnStdout: true).trim()
     }
     else{
         folderName = bat(script:"dir \"$fileName\\cucumber-reports**\" /b",returnStdout: true).trim()
@@ -226,6 +232,53 @@ def sendAttachment(Map args = [ issue: ""]) {
         bat(script: "powershell Compress-Archive \'$env.BUILD_FOLDER_PATH/cucumber-html-reports**\' " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
         bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
+}
+
+def changeIssueStatus(Map args = [issue: ""]){
+    String issue_ID = args.issue.toString()
+    String status = ""
+    String response = ""
+    if(isUnix()){
+        response = sh(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"?fields=status \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+    }
+    else{
+        response = bat(returnStdout: true,script:"curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"?fields=status \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        response = response.substring(response.indexOf("\n")+1).trim()
+    }
+    def jsonSlurper = new JsonSlurperClassic()
+    parse = jsonSlurper.parseText(response)
+    status = parse.fields.status.name
+    if(status.equals("Done")){
+        String body ='{\\"transition\\": {\\"id\\": \\"21\\"}}'
+        if(isUnix()){
+            sh(returnStdout: true,script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/transitions \" --header \"Authorization:" + env.AUTH_TOKEN + " \" --header \"Content-Type:application/json\" -d \""+body+"\"")
+        }
+        else{
+            bat(script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/transitions \"  -H \"Authorization:" + env.AUTH_TOKEN + " \" --header \"Content-Type:application/json\" --data-raw \""+body+"")
+        }
+    }
+}
+
+def checkIssueExist(Map args = [issue: ""]){
+     String issue_ID = args.issue.toString()    
+     boolean issueExist
+     String response = ""
+     if(isUnix()){
+        response = sh(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+     }
+     else{
+        response = bat(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+        response = response.substring(response.indexOf("\n")+1).trim()
+     }
+    response = response.substring(19,39)
+    if(response.equals("Issue does not exist")){
+            issueExist = false
+    }
+    else{
+            issueExist = true
+    }
+        
+    return issueExist;
 }
 
 def addAssignee(Map args = [issue: ""]){
