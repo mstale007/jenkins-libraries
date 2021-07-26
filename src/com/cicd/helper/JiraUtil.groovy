@@ -14,6 +14,8 @@ def updateJirawithFailure(args){
         echo "Issue doesn't exist"
         return
     }
+
+    changeIssueStatus(issue: issueID)
     
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
  
@@ -73,6 +75,24 @@ def updateJirawithSuccess(){
     commentBody+=getBuildSignature()
 
     updateComment(text: commentBody,issue: issueID)
+}
+
+def getBuildNumberWithLink(){
+    String buildNumberWithLink=""
+    if(env.BUILD_URL){
+        if(isUnix()){
+            buildNumberWithLink="[+#$env.BUILD_NUMBER+|$env.BUILD_URL]"
+        }
+        else{
+            buildNumberWithLink="[+#$env.BUILD_NUMBER+^|$env.BUILD_URL]"
+        }
+        
+    }
+    else{
+        buildNumberWithLink="+#$env.BUILD_NUMBER+\\n"
+        echo "[JiraUtil] Warning: Jenkins URL must be set to get BUILD_URL on Jira"
+    }
+    return buildNumberWithLink
 }
 
 def checkIssueExist(Map args = [issue: ""]){
