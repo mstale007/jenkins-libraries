@@ -138,7 +138,7 @@ def getJSON(filePath){
 def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}\"", issue: ""]) {
 
     String issueID = args.issue.toString()
-    Strnig filename = args.filePath.toString()
+    String filename = args.filePath.toString()
 
     if(isUnix()){
         response=sh(script:"cat $filename",returnStdout: true).trim()
