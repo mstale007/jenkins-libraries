@@ -25,8 +25,7 @@ def updateJirawithFailure(args){
         else {
             commentBody+="{panel:bgColor=#fffae6}\\nJunit Test Reports:\\n{panel}\\n"
         }
-        commentBody+=getXML(path: args.xmlPath)
-        //commentBody+=getXML()
+        commentBody+=getXML()
     }
     else{
         commentBody+="{panel:bgColor==#fffae6}\\nUnit tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -40,8 +39,7 @@ def updateJirawithFailure(args){
         else {
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
-        commentBody+=getBDD(filePath: args.bddPath)
-        //commentBody+=getBDD()
+        commentBody+=getBDD()
         sendAttachment(issue: issueID)
     }
     else{
@@ -69,13 +67,11 @@ def updateJirawithSuccess(){
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
-    commentBody+=getXML(path: args.xmlPath)
-    //commentBody+=getXML()
+    commentBody+=getXML()
     
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
-    commentBody+=getBDD(filePath: args.bddPath)
-    // commentBody+=getBDD()
+    commentBody+=getBDD()
     sendAttachment( issue: issueID)
 
     //Build Signature
