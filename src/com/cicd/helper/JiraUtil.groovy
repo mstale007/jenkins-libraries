@@ -10,6 +10,11 @@ def updateJirawithFailure(args){
         echo issueID
         addAssignee(issue: issueID)
     }
+    else if(checkIssueExist(issueID) == false) {
+        echo "Issue doesn't exist"
+        return
+    }
+    
     String commentBody="{panel:bgColor=#ffebe6}\\nBuild #${env.BUILD_NUMBER} Failed at stage: $args.failStage\\n{panel}\\n"
  
     if(args.unitTestReport == true){
@@ -68,6 +73,28 @@ def updateJirawithSuccess(){
     commentBody+=getBuildSignature()
 
     updateComment(text: commentBody,issue: issueID)
+}
+
+def checkIssueExist(Map args = [issue: ""]){
+     String issue_ID = args.issue.toString()    
+     boolean issueExist
+     String response = ""
+     if(isUnix()){
+            response = sh(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+     }
+     else{
+            response = bat(returnStdout: true, script: "curl --request GET \"" + env.JIRA_BOARD + "/issue/"+issue_ID+" \" -H \"Authorization:" + env.AUTH_TOKEN + " \"  -H \"Accept: application/json \" -H \"Content-Type: application/json\"").trim()
+            response = response.substring(response.indexOf("\n")+1).trim()
+     }
+    response = response.substring(19,39)
+    if(response.equals("Issue does not exist")){
+            issueExist = false
+    }
+    else{
+            issueExist = true
+    }
+        
+    return issueExist;
 }
 
 def getBuildSignature(){
