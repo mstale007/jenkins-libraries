@@ -8,12 +8,12 @@ import groovy.json.JsonSlurperClassic
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
     
-    if(issueID.equals("") || !checkIssueExist(issue: issueID)){
+    if(issueID.equals("")){
         issueID = createIssue(failStage: args.failStage)
         echo issueID
         addAssignee(issue: issueID)
     }
-    else if(checkIssueExist(issueID) == false) {
+    else if(checkIssueExist(issue: issueID) == false) {
         echo "Issue doesn't exist"
         return
     }
@@ -65,7 +65,7 @@ def updateJirawithSuccess(){
         echo "[JiraUtil] No issue updated/ no new issue created"
         return
     }
-    else if(!checkIssueExist(issue: issueID)){
+    else if(checkIssueExist(issue: issueID) == false){
         echo "[JiraUtil] Issue $issueID does'nt exists, Invalid issueID mentioned"
         return
     }
