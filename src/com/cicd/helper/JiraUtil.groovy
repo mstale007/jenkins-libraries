@@ -147,18 +147,10 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     String fileName = args.filePath.toString()
 
     if(isUnix()){
-        response=sh(script:"cat \"$fileName\\cucumber-reports**\\cucumber-trends.json\"",returnStdout: true).trim()
+        response=sh(script:"cat \"$fileName\"",returnStdout: true).trim()
     }
     else{
-        folderName = bat(script:"dir \"$fileName\\cucumber-reports**\" /b",returnStdout: true).trim()
-        folderName=folderName.substring(folderName.indexOf("\n")+1).trim()
-        if(folderName.equals("File Not Found")){
-            echo "[JiraUtil] Cucmber reports File not found"
-        }
-        else{
-            fileName = "\"$fileName\\$folderName\\cucumber-trends.json\""
-        }
-        response=bat(script:"type $fileName",returnStdout: true).trim()
+        response=bat(script:"type \"$fileName\"",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
 
