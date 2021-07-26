@@ -17,10 +17,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
-            FAIL_STAGE = ""
             PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
-            PROJECT_NAME = readMavenPom().getArtifactId()
-            PROJECT_VERSION = readMavenPom().getVersion()
             NEW_BRANCH_NAME=env.BRANCH_NAME.replace("/","-")
             BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${NEW_BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
@@ -56,12 +53,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     script {
                         LAST_STAGE = env.STAGE_NAME
                         
-                        if(isUnix()) {
-                            sh "mvn clean install -DskipTests"
-                        }
-                        else {
-                            bat "mvn clean install -DskipTests"
-                        }
+                        echo "Build"
                     }
                 }
                 post{
@@ -81,18 +73,12 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         LAST_STAGE = env.STAGE_NAME
                         UNIT_TEST_REPORT = true
 
-                        if(isUnix()) {
-                            sh "mvn -Dtest=UnitTests test jacoco:report"
-                        }
-                        else {
-                            bat "mvn -Dtest=UnitTests test jacoco:report"
-                        }
+                        echo "Unit Tests"
                     }
                 }
                 post{
                     always {
-                        junit '**/target/surefire-reports/*.xml'
-                        jacoco()
+                        echo "Jacoco Running"
                     }
                     success {
                         script {
@@ -108,12 +94,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                     script {
                         LAST_STAGE = env.STAGE_NAME
 
-                        if(isUnix()) {
-                            sh "java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar &"
-                        }
-                        else {
-                            bat "START /B java -jar target/" + env.PROJECT_NAME + "-" + env.PROJECT_VERSION + ".jar"
-                        }
+                        echo "Running on localhost"
                     }
                 }
             }
@@ -125,26 +106,12 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         LAST_STAGE = env.STAGE_NAME
                         BDD_REPORT = true
                         
-                        if(isUnix()) {
-                            sh "mvn -Dtest=TestRunner test"
-                        }
-                        else {
-                            bat "mvn -Dtest=TestRunner test"
-                        }
+                        echo "Running BDD tests"
                     } 
                 }
                 post{
                     always {
-                        cucumber buildStatus: 'UNSTABLE',
-                            reportTitle: 'My report',
-                            fileIncludePattern: '**/*.json',
-                            trendsLimit: 10,
-                            classifications: [
-                                [
-                                    'key': 'Browser',
-                                    'value': 'Firefox'
-                                ]
-                            ]
+                        echo "BDD succesful"
                     }
                     success {
                         script {
@@ -164,7 +131,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             failure {
                 echo "Failure"
                 script {
-                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                    jiraUtil.updateJirawithFailure(bddPath:"cucumber-trends.json",xmlPath:"junitResult.xml",failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
                 }
             }
             //cleanup{} 

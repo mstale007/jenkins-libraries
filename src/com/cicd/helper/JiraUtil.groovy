@@ -26,7 +26,6 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nJunit Test Reports:\\n{panel}\\n"
         }
         commentBody+=getXML(path: args.xmlPath)
-        //commentBody+=getXML()
     }
     else{
         commentBody+="{panel:bgColor==#fffae6}\\nUnit tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -41,7 +40,6 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
         commentBody+=getBDD(filePath: args.bddPath)
-        //commentBody+=getBDD()
         sendAttachment(issue: issueID)
     }
     else{
@@ -54,7 +52,7 @@ def updateJirawithFailure(args){
     updateComment(text: commentBody, issue:issueID)
 }
 
-def updateJirawithSuccess(){
+def updateJirawithSuccess(args){
     String issueID = getIssueID().toString()
     if(issueID.equals("")){
         echo "[JiraUtil] No issue updated/ no new issue created"
@@ -70,12 +68,10 @@ def updateJirawithSuccess(){
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
     commentBody+=getXML(path: args.xmlPath)
-    //commentBody+=getXML()
     
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     commentBody+=getBDD(filePath: args.bddPath)
-    // commentBody+=getBDD()
     sendAttachment( issue: issueID)
 
     //Build Signature
