@@ -108,14 +108,6 @@ def getBuildNumberWithLink(){
 def getBuildSignature(){
     String buildSign=""
 
-    //Build URL
-    if(env.BUILD_URL != null){
-        buildSign="Build URL: $env.BUILD_URL\\n"
-
-
-def getBuildSignature(){
-    String buildSign=""
-
     //AccountID
     String accountId= getAccountId().toString()
     String commitEmail= getCommitEmail().toString()
