@@ -146,7 +146,6 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     else{
         folderName = bat(script:"dir \"$fileName\\cucumber-reports**\" /b",returnStdout: true).trim()
         folderName=folderName.substring(folderName.indexOf("\n")+1).trim()
-        echo "Folder Name: $folderName"
         if(folderName.equals("File Not Found")){
             echo "[JiraUtil] Cucmber reports File not found"
         }
