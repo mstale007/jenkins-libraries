@@ -40,7 +40,7 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
         commentBody+=getBDD(filePath: args.bddPath)
-        sendAttachment(issue: issueID)
+        //sendAttachment(issue: issueID)
     }
     else{
        commentBody+="{panel:bgColor==#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -72,7 +72,7 @@ def updateJirawithSuccess(args){
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     commentBody+=getBDD(filePath: args.bddPath)
-    sendAttachment( issue: issueID)
+    //sendAttachment( issue: issueID)
 
     //Build Signature
     commentBody+=getBuildSignature()
