@@ -152,6 +152,7 @@ def getBDD(Map args = [filePath: "\"$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\b
             filename = "\"$filename\\cucumber-trends.json\""
         }
         echo "Filepath: $filename"
+        filename=filename.substring(filename.indexOf("\n")+1).trim()
         response=bat(script:"type $filename",returnStdout: true).trim()
         response=response.substring(response.indexOf("\n")+1).trim()
     }
