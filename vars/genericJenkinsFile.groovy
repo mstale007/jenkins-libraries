@@ -14,6 +14,10 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
         //options{}
 
         //parameters{}
+        
+        tools{
+            jdk "JAVA_HOME"
+        }
 
         environment {
             ISSUE_KEY = args.issueKey.toString()
