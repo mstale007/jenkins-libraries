@@ -3,6 +3,8 @@ package com.cicd.helper
 import groovy.json.JsonSlurper
 import groovy.json.JsonSlurperClassic
 
+//Called in case of build failure. Updates failure status and reports to an existing JIRA issue (if mentioned) or creates 
+//a new issue (if issue ID not mentioned)
 def updateJirawithFailure(args){
     String issueID = getIssueID().toString()
     
@@ -56,6 +58,7 @@ def updateJirawithFailure(args){
     updateComment(text: commentBody, issue:issueID)
 }
 
+//Called in case of build success. Updates success status and reports to an existing JIRA issue (if mentioned)
 def updateJirawithSuccess(){
     String issueID = getIssueID().toString()
     if(issueID.equals("")){
