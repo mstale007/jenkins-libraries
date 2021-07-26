@@ -105,6 +105,8 @@ def getBuildNumberWithLink(){
     return buildNumberWithLink
 }
 
+//Fetches commit details of the latest commit to the Spring Boot application. These details are updated on JIRA in the form of 
+//comments.
 def getBuildSignature(){
     String buildSign=""
 
@@ -123,6 +125,7 @@ def getBuildSignature(){
     return buildSign
 }
 
+//Adds a comment to the JIRA issue linked to the given issue ID.
 def updateComment(Map args =[text: "", issueID: ""]){
 
     String issue_ID = args.issue.toString()
@@ -148,6 +151,7 @@ def getJSON(filePath){
     return cfg
 }
 
+//Read and parse BDD Report generated in the form of a JSON file
 def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}", issue: ""]) {
 
     String issueID = args.issue.toString()
@@ -192,6 +196,7 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
     //updateComment(text: "BDD Test Report for build #$env.BUILD_NUMBER:\\n"+comment, issue: issueID)
 }
 
+//Read and parse an XML file. Used to parse Junit Test Report XML file
 @NonCPS
 String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
     String xmlPath = args.path.toString()
@@ -227,6 +232,7 @@ String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
     return comment 
 }
 
+//Attaches a zip file to the mentioned issue as an attachment. Used to add BDD Report as an attachment to the issue.
 def sendAttachment(Map args = [ issue: ""]) {
     
     String issue_ID = args.issue.toString()
@@ -241,6 +247,7 @@ def sendAttachment(Map args = [ issue: ""]) {
     }
 }
 
+//Changes the status of a “Done” JIRA issue to “In Progress” in case of pipeline build failure.
 def changeIssueStatus(Map args = [issue: ""]){
     String issue_ID = args.issue.toString()
     String status = ""
@@ -266,6 +273,7 @@ def changeIssueStatus(Map args = [issue: ""]){
     }
 }
 
+//Checks if the given JIRA issue exists on JIRA.
 def checkIssueExist(Map args = [issue: ""]){
      String issue_ID = args.issue.toString()    
      boolean issueExist
@@ -288,6 +296,8 @@ def checkIssueExist(Map args = [issue: ""]){
     return issueExist;
 }
 
+//Assigns issue denoted by an issue ID to the user that last committed to the Spring Boot application. Used in case of 
+//creation of a new issue.
 def addAssignee(Map args = [issue: ""]){
 
     String issue_ID = args.issue.toString()
@@ -311,21 +321,21 @@ String getAccountIdParser(response) {
     return accountId; 
 }
 
+//Finds the email ID of the user that made the last commit to the Spring Boot application.
 def getCommitEmail() {
     
     String commitEmail
 
     if(isUnix()) {
         commitEmail = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'")
-        echo "isUnix $commitEmail"
     }
     else {
         commitEmail = bat(returnStdout: true, script: "git log -1 --pretty=format:'%%ae'")
     }
-    echo "email $commitEmail"
     return commitEmail
 }
 
+//Finds the JIRA account of the user from their email ID.
 def getAccountId(){
     String accountId = ""
     String response = ""
@@ -357,6 +367,7 @@ String parseJsonForIssueId(response) {
     return issueKey; 
 }
 
+//Creates a new JIRA issue with appropriate title and description. Called when a build fails and no issue ID is found.
 def createIssue(Map args = [failStage: ""]){
     String response =""
     String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"Build #'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + args.failStage.toString() + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
@@ -370,7 +381,7 @@ def createIssue(Map args = [failStage: ""]){
     return parseJsonForIssueId(response) 
 } 
 
-
+//Fetches JIRA issue ID mentioned in the branch name or commit message. If no issue ID is found, returns null.
 def getIssueID(){
     String issueKey = env.ISSUE_KEY 
     String branchName=env.BRANCH_NAME;
