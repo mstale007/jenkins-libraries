@@ -158,7 +158,7 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    jiraUtil.updateJirawithSuccess(bddPath:"",xmlPath:"")
+                    jiraUtil.updateJirawithSuccess(bddPath:"cucumber-trends.json",xmlPath:"junitResult.xml")
                 }
             }
             failure {
