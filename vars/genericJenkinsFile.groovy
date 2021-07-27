@@ -125,7 +125,12 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    jiraUtil.updateJirawithSuccess(bddPath:"$env.WORKSPACE\\cucumber-trends.json",xmlPath:"$env.WORKSPACE\\junitResult.xml")
+                    if(isUnix()){
+                        jiraUtil.updateJirawithSuccess(bddPath:"$env.WORKSPACE/cucumber-trends.json",xmlPath:"$env.WORKSPACE/junitResult.xml")
+                    }
+                    else{
+                        jiraUtil.updateJirawithSuccess(bddPath:"$env.WORKSPACE\\cucumber-trends.json",xmlPath:"$env.WORKSPACE\\junitResult.xml")
+                    }
                 }
             }
             failure {
