@@ -357,8 +357,10 @@ def createIssue(Map args = [failStage: ""]){
 
 def getIssueID(){
     String issueID=getIssueFromNamingConvention()
+    echo "getIssueFromNamingConvention: $issueID"
     if(issueID.equals("")){
         issueID=getIssueFromJenkinsfile()
+        echo "getIssueFromJenkinsfile: $issueID"
     }
     return issueID
 }
@@ -441,6 +443,7 @@ def getIssueFromNamingConvention(){
         commitMessage=commitMessage.substring(commitMessage.indexOf("\n")+1).trim()
         commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
     }
+    echo "Commit Message: $commitMessage"
 
     //Example:
     //feature/CICD-13-feature-description
