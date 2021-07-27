@@ -142,13 +142,13 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
                         cucumber buildStatus: 'UNSTABLE',
                             reportTitle: 'My report',
                             fileIncludePattern: '**/*.json',
-                            trendsLimit: 10,
-                            classifications: [
+                            trendsLimit: 10
+                            /*classifications: [
                                 [
                                     'key': 'Browser',
                                     'value': 'Firefox'
                                 ]
-                            ]
+                            ]*/
                     }
                     success {
                         script {
