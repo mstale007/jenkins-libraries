@@ -437,6 +437,7 @@ def getIssueFromNamingConvention(){
 
     if(isUnix()){
         commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
     }
     else{
         commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()
