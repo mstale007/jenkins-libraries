@@ -136,7 +136,12 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             failure {
                 echo "Failure"
                 script {
-                    jiraUtil.updateJirawithFailure(bddPath:"$env.WORKSPACE\\cucumber-trends.json",xmlPath:"$env.WORKSPACE\\junitResult.xml",failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                    if(isUnix()){
+                        jiraUtil.updateJirawithFailure(bddPath:"$env.WORKSPACE/cucumber-trends.json",xmlPath:"$env.WORKSPACE/junitResult.xml",failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                    }
+                    else{
+                        jiraUtil.updateJirawithFailure(bddPath:"$env.WORKSPACE\\cucumber-trends.json",xmlPath:"$env.WORKSPACE\\junitResult.xml",failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                    }
                 }
             }
             //cleanup{} 
