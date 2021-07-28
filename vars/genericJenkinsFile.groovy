@@ -1,6 +1,6 @@
 import com.cicd.helper.JiraUtil
 
-def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
+def call(Map args =[buildMode: "mvn", issueKey: "", addHTMLReportToJira: true]) { 
     def jiraUtil = new JiraUtil()
     def LAST_STAGE = ""
     def BDD_REPORT = false
@@ -158,13 +158,13 @@ def call(Map args =[buildMode: "mvn", issueKey: ""]) {
             success {
                 echo "Success"
                 script {
-                    jiraUtil.updateJirawithSuccess()
+                    jiraUtil.updateJirawithSuccess(sendAttachment: args.addHTMLReportToJira)
                 }
             }
             failure {
                 echo "Failure"
                 script {
-                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD)
+                    jiraUtil.updateJirawithFailure(failStage: LAST_STAGE, bddReport: BDD_REPORT, unitTestReport: UNIT_TEST_REPORT, passedUT: PASSED_UT, passedBDD: PASSED_BDD, sendAttachment: args.addHTMLReportToJira)
                 }
             }
             //cleanup{} 
