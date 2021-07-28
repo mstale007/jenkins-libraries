@@ -1,6 +1,6 @@
 import com.cicd.helper.JiraUtil
 
-def call(Map args =[buildMode: "mvn", issueKey: ""]) { 
+def call(Map args =[buildMode: "mvn", issueKey: "", sendReporttoJira: true]) { 
     def jiraUtil = new JiraUtil()
     def LAST_STAGE = ""
     def BDD_REPORT = false
