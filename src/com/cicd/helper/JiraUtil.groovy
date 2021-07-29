@@ -369,6 +369,12 @@ String parseJsonForIssueId(response) {
 
 //Creates a new JIRA issue with appropriate title and description. Called when a build fails and no issue ID is found.
 def createIssue(Map args = [failStage: ""]){
+
+    if(env.ISSUE_KEY == null || env.ISSUE_KEY.equals("")) {
+        echo "[JiraUtil] Project key not found"
+        return
+    }
+
     String response =""
     String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"Build #'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + args.failStage.toString() + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
     if(isUnix()){
