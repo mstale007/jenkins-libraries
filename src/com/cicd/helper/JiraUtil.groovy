@@ -46,7 +46,10 @@ def updateJirawithFailure(args){
             commentBody+="{panel:bgColor=#fffae6}\\nBDD Test Reports:\\n{panel}\\n"
         }
         commentBody+=getBDD()
-        sendAttachment(issue: issueID)
+        
+        if(args.sendAttachment){
+            sendAttachment( issue: issueID)
+        }
     }
     else{
        commentBody+="{panel:bgColor==#fffae6}\\nBDD tests were not performed due to failure at an earlier stage\\n{panel}\\n"
@@ -59,7 +62,7 @@ def updateJirawithFailure(args){
 }
 
 //Called in case of build success. Updates success status and reports to an existing JIRA issue (if mentioned)
-def updateJirawithSuccess(){
+def updateJirawithSuccess(args){
     String issueID = getIssueID().toString()
     if(issueID.equals("")){
         echo "[JiraUtil] No issue updated/ no new issue created"
@@ -79,7 +82,10 @@ def updateJirawithSuccess(){
     //BDD Reports
     commentBody+="{panel:bgColor=#e3fcef}\\nBDD Test Reports:\\n{panel}\\n"
     commentBody+=getBDD()
-    sendAttachment( issue: issueID)
+
+    if(args.sendAttachment){
+        sendAttachment( issue: issueID)
+    }
 
     //Build Signature
     commentBody+=getBuildSignature()
@@ -460,6 +466,7 @@ def getIssueFromNamingConvention(){
 
     if(isUnix()){
         commitMessage = sh(returnStdout: true, script: 'git log -1 --oneline').trim()
+        commitMessage=commitMessage.substring(commitMessage.indexOf(" ")+1).trim()
     }
     else{
         commitMessage = bat(returnStdout: true, script: 'git log -1 --oneline').trim()

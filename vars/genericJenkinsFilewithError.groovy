@@ -1,6 +1,6 @@
 import com.cicd.helper.JiraUtil
 
-def call(Map args =[issueKey: "", addHTMLReportToJira: true]) { 
+def call(Map args =[buildMode: "mvn", issueKey: "", addHTMLReportToJira: true]) { 
     def jiraUtil = new JiraUtil()
     def LAST_STAGE = ""
     def BDD_REPORT = false
@@ -16,13 +16,13 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
         //parameters{}
 
         environment {
-            ISSUE_KEY = args.issueKey.toString()            //Issue key mentioned in Spring Boot Application Jenkinsfile
+            ISSUE_KEY = args.issueKey.toString()
             FAIL_STAGE = ""
-            PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}" //Name of pipeline project
-            PROJECT_NAME = readMavenPom().getArtifactId()   //Name of Spring Boot application project
-            PROJECT_VERSION = readMavenPom().getVersion()   //Version of Spring Boot application project
-            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
-            //Path of build information on server or local machine
+            PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
+            PROJECT_NAME = readMavenPom().getArtifactId()
+            PROJECT_VERSION = readMavenPom().getVersion()
+            NEW_BRANCH_NAME=env.BRANCH_NAME.replace("/","-")
+            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${NEW_BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
         stages {
@@ -44,13 +44,11 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                     }
                 }
             }
-            //Load project specific environment variables 
-            stage("Load Env Variables") {   
+            stage("Load Env Variables") {
                 steps {
                     load "env-vars/env.groovy"
                 }
             }
-            //Build Spring Boot Maven application
             stage("Build"){
                 steps{
                     echo "Stage: $env.STAGE_NAME"
@@ -64,6 +62,9 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                         else {
                             bat "mvn clean install -DskipTests"
                         }
+
+                        //Intentional Error here
+                        bat "aoifhafuioh"
                     }
                 }
                 post{
@@ -75,7 +76,6 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                     }
                 }
             }
-            //Unit tests on Spring Boot Maven application
             stage("Unit Tests"){
                 steps{
                     echo "Stage: $env.STAGE_NAME"
@@ -104,7 +104,6 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                     }
                 }
             }
-            //Spring Boot Maven application run to perform BDD tests
             stage('Run on localhost') {
                 steps {
                     echo "Stage: $env.STAGE_NAME"
@@ -121,7 +120,6 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                     }
                 }
             }
-            //BDD tests on Spring Boot Maven application
             stage("BDD Test"){
                 steps{
                     echo "Stage: $env.STAGE_NAME"
