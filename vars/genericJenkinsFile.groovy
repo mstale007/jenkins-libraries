@@ -20,9 +20,6 @@ def call(Map args =[buildMode: "mvn", issueKey: "", addHTMLReportToJira: true]) 
             ISSUE_KEY = args.issueKey.toString()
             FAIL_STAGE = ""
             PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}"
-            PROJECT_NAME = readMavenPom().getArtifactId()
-            PROJECT_VERSION = readMavenPom().getVersion()
-            NEW_BRANCH_NAME=env.BRANCH_NAME.replace("/","-")
             BUILD_FOLDER_PATH = currentBuild.rawBuild.getParent().getRootDir()//"$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${NEW_BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
