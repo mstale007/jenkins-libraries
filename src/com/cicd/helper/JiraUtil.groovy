@@ -376,13 +376,13 @@ String parseJsonForIssueId(response) {
 //Creates a new JIRA issue with appropriate title and description. Called when a build fails and no issue ID is found.
 def createIssue(Map args = [failStage: ""]){
 
-    if(env.ISSUE_KEY == null || env.ISSUE_KEY.equals("")) {
+    if(env.JIRA_PROJECT_KEY == null || env.JIRA_PROJECT_KEY.equals("")) {
         echo "[JiraUtil] Project key not found"
         return
     }
 
     String response =""
-    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"Build #'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + args.failStage.toString() + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
+    String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.JIRA_PROJECT_KEY + '\\"},\\"summary\\": \\"Build #'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + args.failStage.toString() + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
     if(isUnix()){
         response  = sh(returnStdout: true,script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" -d \""+body+"\"")   
     }
@@ -395,7 +395,7 @@ def createIssue(Map args = [failStage: ""]){
 
 //Fetches JIRA issue ID mentioned in the branch name or commit message. If no issue ID is found, returns null.
 def getIssueID(){
-    String issueKey = env.ISSUE_KEY 
+    String issueKey = env.JIRA_PROJECT_KEY 
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
     String commitMessage=""

@@ -16,7 +16,7 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
         //parameters{}
 
         environment {
-            ISSUE_KEY = args.issueKey.toString()            //Issue key mentioned in Spring Boot Application Jenkinsfile
+            JIRA_PROJECT_KEY = args.issueKey.toString()            //JIRA Project key mentioned in Spring Boot Application Jenkinsfile
             FAIL_STAGE = ""
             PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}" //Name of pipeline project
             PROJECT_NAME = readMavenPom().getArtifactId()   //Name of Spring Boot application project
