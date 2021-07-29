@@ -158,7 +158,7 @@ def getJSON(filePath){
 }
 
 //Read and parse BDD Report generated in the form of a JSON file
-def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.NEW_BRANCH_NAME}", issue: ""]) {
+def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.BRANCH_NAME}", issue: ""]) {
 
     String issueID = args.issue.toString()
     String fileName = args.filePath.toString()
