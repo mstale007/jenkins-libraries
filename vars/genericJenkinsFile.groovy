@@ -145,7 +145,7 @@ def call(Map args =[buildMode: "mvn", issueKey: "", addHTMLReportToJira: true]) 
                                     'value': 'Firefox'
                                 ]
                             ],
-                            jsonReportDirectory: "testrun/reports",
+                            jsonReportDirectory: "testrun/reports"
                     }
                     success {
                         script {
