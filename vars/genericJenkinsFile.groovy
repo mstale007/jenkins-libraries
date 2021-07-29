@@ -8,7 +8,7 @@ def call(Map args =[buildMode: "mvn", issueKey: "", addHTMLReportToJira: true]) 
     def PASSED_UT = false
     def PASSED_BDD = false
 
-    def parentDisplayName = currentBuild.rawBuild.getParent().getRootDir()
+    def parentDisplayName = currentBuild.getParent().getRootDir()
     println "Parent = " + parentDisplayName
 
     pipeline {
