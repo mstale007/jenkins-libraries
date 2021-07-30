@@ -21,7 +21,7 @@ def updateJirawithFailure(args){
     changeIssueStatus(issue: issueID)
 
     String buildNumberWithLink=getBuildNumberWithLink()
-    String commentBody="{panel:bgColor=#ffebe6}\\nBuild $buildNumberWithLink Failed at stage: $args.failStage\\n{panel}\\n"
+    String commentBody="{panel:bgColor=#ffebe6}\\nBuild $buildNumberWithLink Failed at stage: $args.failStage [$env.PIPELINE_NAME@$env.BRANCH_NAME]\\n{panel}\\n"
  
     if(args.unitTestReport == true){
         //XML reports
@@ -73,7 +73,7 @@ def updateJirawithSuccess(args){
         return
     }
     String buildNumberWithLink=getBuildNumberWithLink()
-    String commentBody="{panel:bgColor=#e3fcef}\\nBuild $buildNumberWithLink Successful\\n{panel}\\n"
+    String commentBody="{panel:bgColor=#e3fcef}\\nBuild $buildNumberWithLink Successful [$env.PIPELINE_NAME@$env.BRANCH_NAME]\\n{panel}\\n"
 
     //XML reports
     commentBody+="{panel:bgColor=#e3fcef}\\nJunit Test Reports:\\n{panel}\\n"
