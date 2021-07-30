@@ -48,7 +48,7 @@ def updateJirawithFailure(args){
         commentBody+=getBDD()
         
         if(args.sendAttachment){
-            sendAttachment( issue: issueID)
+            sendAttachment( issue: issueID, filePath: "$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**")
         }
     }
     else{
@@ -84,7 +84,7 @@ def updateJirawithSuccess(args){
     commentBody+=getBDD()
 
     if(args.sendAttachment){
-        sendAttachment( issue: issueID)
+        sendAttachment( issue: issueID, filePath: "$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**")
     }
 
     //Build Signature
