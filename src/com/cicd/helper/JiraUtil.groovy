@@ -238,16 +238,16 @@ String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER
 }
 
 //Attaches a zip file to the mentioned issue as an attachment. Used to add BDD Report as an attachment to the issue.
-def sendAttachment(Map args = [ issue: ""]) {
+def sendAttachment(Map args = [ issue: "", filePath: "$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**"]) {
     
     String issue_ID = args.issue.toString()
 
     if(isUnix()) {
-        sh(script: "zip " + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip \'$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**\'")
+        sh(script: "zip " + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip \'$args.filePath\'")
         sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive \'$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**\' " + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
+        bat(script: "powershell Compress-Archive \'$args.filePath\' " + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
         bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
 }
@@ -392,8 +392,17 @@ def createIssue(Map args = [failStage: ""]){
     return parseJsonForIssueId(response) 
 } 
 
-//Fetches JIRA issue ID mentioned in the branch name or commit message. If no issue ID is found, returns null.
+// Checks for JIRA issue ID mentioned in branch name or commit messaage by Naming convention first, If not found, check with help of Project Key mentioned JenkinsFile, else return null.
 def getIssueID(){
+    String issueID=getIssueFromNamingConvention()
+    if(issueID.equals("")){
+        issueID=getIssueFromJenkinsFile()
+    }
+    return issueID
+}
+
+//Fetches JIRA issue ID mentioned in the branch name or commit message from project key mentioned in JenkinsFile. If no issue ID is found, returns null.
+def getIssueFromJenkinsFile(){
     String issueKey = env.JIRA_PROJECT_KEY 
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
@@ -454,6 +463,7 @@ def getIssueID(){
     return jiraIssue;
 }
 
+// Fetches JIRA issue ID mentioned in the branch name or commit message (using regex only) if naming convention is followed  
 def getIssueFromNamingConvention(){
     String branchName=env.BRANCH_NAME;
     String prTitle=env.CHANGE_TITLE;
