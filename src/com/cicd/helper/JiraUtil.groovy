@@ -244,7 +244,7 @@ def sendAttachment(Map args = [ issue: "", filePath: "$env.BUILD_FOLDER_PATH/bui
     String fileName = args.filePath.toString()
 
     if(isUnix()) {
-        sh(script: "zip " + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip \'$args.filePath\'")
+        sh(script: "zip " + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip " + fileName)
         sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.NEW_BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
     else {
