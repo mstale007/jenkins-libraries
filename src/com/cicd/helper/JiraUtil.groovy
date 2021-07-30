@@ -352,6 +352,10 @@ String parseJsonForIssueId(response) {
 
 def createIssue(Map args = [failStage: ""]){
     String response =""
+    if(env.ISSUE_KEY.equals("")){
+        String issueID = getIssueID().toString()
+        env.issueKey = issueID.substring(issueID.indexOf("-"))
+    }
     String body = '{\\"fields\\": {\\"project\\":{\\"key\\": \\"' + env.ISSUE_KEY + '\\"},\\"summary\\": \\"Build #'  + env.BUILD_NUMBER + ' Failure\\",\\"description\\": \\"Build #' + env.BUILD_NUMBER + ' failed for job ' + env.JOB_NAME + ' at stage ' + args.failStage.toString() + '\\",\\"issuetype\\": {\\"name\\": \\"Bug\\"}}}'
     if(isUnix()){
         response  = sh(returnStdout: true,script: "curl -g --request POST \"" + env.JIRA_BOARD + "/issue/\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"Content-Type:application/json\" -d \""+body+"\"")   
