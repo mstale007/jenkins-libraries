@@ -8,6 +8,7 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
     def PASSED_UT = false
     def PASSED_BDD = false
 
+
     pipeline {
         agent any
 
@@ -21,8 +22,9 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
             PIPELINE_NAME = "${env.JOB_NAME.split('/')[0]}" //Name of pipeline project
             PROJECT_NAME = readMavenPom().getArtifactId()   //Name of Spring Boot application project
             PROJECT_VERSION = readMavenPom().getVersion()   //Version of Spring Boot application project
-            BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
+            //BUILD_FOLDER_PATH = "$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${env.BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
             //Path of build information on server or local machine
+            BUILD_FOLDER_PATH = currentBuild.rawBuild.getParent().getRootDir()//"$JENKINS_HOME/jobs/${PIPELINE_NAME}/branches/${NEW_BRANCH_NAME}/builds/${env.BUILD_NUMBER}"
         }
 
         stages {

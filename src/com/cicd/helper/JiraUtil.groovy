@@ -157,8 +157,7 @@ def getJSON(filePath){
     return cfg
 }
 
-//Read and parse BDD Report generated in the form of a JSON file
-def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\branches\\${env.BRANCH_NAME}", issue: ""]) {
+def getBDD(Map args = [filePath: env.BUILD_FOLDER_PATH, issue: ""]) {
 
     String issueID = args.issue.toString()
     String fileName = args.filePath.toString()
@@ -204,7 +203,7 @@ def getBDD(Map args = [filePath: "$JENKINS_HOME\\jobs\\${env.PIPELINE_NAME}\\bra
 
 //Read and parse an XML file. Used to parse Junit Test Report XML file
 @NonCPS
-String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/junitResult.xml"]) {
+String getXML(Map args = [path: "$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/junitResult.xml"]) {
     String xmlPath = args.path.toString()
 
     def xml = new XmlSlurper().parse(xmlPath) 
@@ -244,11 +243,11 @@ def sendAttachment(Map args = [ issue: ""]) {
     String issue_ID = args.issue.toString()
 
     if(isUnix()) {
-        sh(script: "zip " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip \'$env.BUILD_FOLDER_PATH/cucumber-html-reports**\'")
+        sh(script: "zip " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip \'$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**\'")
         sh(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
     else {
-        bat(script: "powershell Compress-Archive \'$env.BUILD_FOLDER_PATH/cucumber-html-reports**\' " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
+        bat(script: "powershell Compress-Archive \'$env.BUILD_FOLDER_PATH/builds/$env.BUILD_NUMBER/cucumber-html-reports**\' " + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip")
         bat(script: "curl -s -i -X POST \"" + env.JIRA_BOARD + "/issue/"+issue_ID+"/attachments\" --header \"Authorization:" + env.AUTH_TOKEN + "\" --header \"X-Atlassian-Token:no-check\" --form \"file=@" + env.BRANCH_NAME + "-BDD-Report-Build-" + env.BUILD_NUMBER + ".zip\"")
     }
 }
