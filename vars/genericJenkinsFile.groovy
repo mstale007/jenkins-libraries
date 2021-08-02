@@ -149,7 +149,7 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                         cucumber buildStatus: 'UNSTABLE',
                             reportTitle: 'My report',
                             fileIncludePattern: '**/*.json',
-                            trendsLimit: 10,
+                            trendsLimit: 10
                     }
                     success {
                         script {
