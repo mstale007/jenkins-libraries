@@ -150,12 +150,6 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
                             reportTitle: 'My report',
                             fileIncludePattern: '**/*.json',
                             trendsLimit: 10,
-                            classifications: [
-                                [
-                                    'key': 'Browser',
-                                    'value': 'Firefox'
-                                ]
-                            ]
                     }
                     success {
                         script {
