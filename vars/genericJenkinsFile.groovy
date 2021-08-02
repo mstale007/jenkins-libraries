@@ -11,6 +11,10 @@ def call(Map args =[issueKey: "", addHTMLReportToJira: true]) {
 
     pipeline {
         agent any
+        
+        tools{
+            jdk "JAVA_HOME"
+        }
 
         //options{}
 
